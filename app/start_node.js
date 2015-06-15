@@ -4,6 +4,8 @@ var advertisement = require('../core/advertisement');
 var ip = require("ip");
 var node_addr = ip.address();
 
+var node_launched = false;
+
 var opts = require("nomnom")
     .script("start_cluster_node")
     .options({
@@ -19,7 +21,7 @@ search_node_and_connect();
 
 function search_node_and_connect() {
     advertisement.search_a_node(function (service) {
-        if ( service.addresses.indexOf( node_addr ) < 0 ) {
+        if ( service.addresses.indexOf( node_addr ) < 0 && !node_launched) {
             console.log('Node found :');
             console.log('   IP :', service.addresses);
             console.log('   Host :', service.host);
@@ -62,5 +64,6 @@ function start_node(host) {
     });
 
     g.start();
+    node_launched = true;
     console.log('Node', node_port, 'started');
 }
