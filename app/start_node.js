@@ -1,6 +1,12 @@
 #!/usr/bin/env node
 var advertisement = require('../core/advertisement');
 
+var node_addr = "";
+
+require('dns').lookup(require('os').hostname(), function (err, add, fam) {
+    node_addr = add;
+});
+
 var opts = require("nomnom")
     .script("start_cluster_node")
     .options({
@@ -16,17 +22,19 @@ search_node_and_connect();
 
 function search_node_and_connect() {
     advertisement.search_a_node(function (service) {
-        console.log('Node found :');
-        console.log('   IP :', service.addresses);
-        console.log('   Host :', service.host);
-        console.log('   Name :', service.txtRecord.cluster_name);
+        if ( !service.addresses.indexOf( node_addr ) ) {
+            console.log('Node found :');
+            console.log('   IP :', service.addresses);
+            console.log('   Host :', service.host);
+            console.log('   Name :', service.txtRecord.cluster_name);
 
-        start_node(service.host);
+            start_node(service.host);
 
-        console.log('Stop looking for nodes');
-        advertisement.stop_searching();
+            console.log('Stop looking for nodes');
+            advertisement.stop_searching();
 
-        advertisement.start(opts.name);
+            advertisement.start(opts.name);
+        }
     });
 }
 
