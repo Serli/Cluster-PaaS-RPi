@@ -22,7 +22,7 @@ search_node_and_connect();
 
 function search_node_and_connect() {
     advertisement.search_a_node(function (service) {
-        if ( !service.addresses.indexOf( node_addr ) ) {
+        if ( service.addresses.indexOf( node_addr ) < 0 ) {
             console.log('Node found :');
             console.log('   IP :', service.addresses);
             console.log('   Host :', service.host);
@@ -32,7 +32,6 @@ function search_node_and_connect() {
 
             console.log('Stop looking for nodes');
             advertisement.stop_searching();
-
             advertisement.start(opts.name);
         }
     });
