@@ -29,7 +29,6 @@ function search_node_and_connect() {
 
             console.log('Stop looking for nodes');
             advertisement.stop_searching();
-            advertisement.start(opts.name);
         }
     });
 }
