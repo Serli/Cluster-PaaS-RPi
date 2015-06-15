@@ -37,9 +37,8 @@ function search_node_and_connect() {
 }
 
 function start_node(host) {
-    var node_port = 9001;
-    var seed_port = 9000;
-    var addr = [host, seed_port].join(':');
+    var node_port = 9000;
+    var addr = [host, node_port].join(':');
 
     console.log('Connecting to node', addr);
     var g = new Gossiper(node_port, [addr]);
