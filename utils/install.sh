@@ -15,10 +15,13 @@ echo '--- MDNS ---'
 sudo apt-get install libavahi-compat-libdnssd-dev
 npm install mdns
 
+mv ./browser.js ~/node_modules/mdns/lib/
+
 echo '--- Nomnom ---'
 npm install nomnom
 
 echo '--- Msgpack ---'
 npm install msgpack
 
-mv ./browser.js ~/node_modules/mdns/lib/
+echo '--- IP ---'
+npm install ip

@@ -1,11 +1,8 @@
 #!/usr/bin/env node
 var advertisement = require('../core/advertisement');
 
-var node_addr = "";
-
-require('dns').lookup(require('os').hostname(), function (err, add, fam) {
-    node_addr = add;
-});
+var ip = require("ip");
+var node_addr = ip.address();
 
 var opts = require("nomnom")
     .script("start_cluster_node")
