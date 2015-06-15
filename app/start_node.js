@@ -1,5 +1,6 @@
 #!/usr/bin/env node
 var advertisement = require('../core/advertisement');
+var Gossiper = require('../lib/node-gossip').Gossiper;
 
 var ip = require("ip");
 var node_addr = ip.address();
@@ -39,8 +40,6 @@ function start_node(host) {
     var node_port = 9001;
     var seed_port = 9000;
     var addr = [host, seed_port].join(':');
-
-    var Gossiper = require('../lib/node-gossip').Gossiper;
 
     var g;
     if ( host ) {
