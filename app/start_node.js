@@ -25,10 +25,10 @@ function search_node_and_connect() {
             console.log('   Host :', service.host);
             console.log('   Name :', service.txtRecord.cluster_name);
 
-            start_node(service.host);
-
             console.log('Stop looking for nodes');
             advertisement.stop_searching();
+
+            start_node(service.host);
         }
     });
 }
