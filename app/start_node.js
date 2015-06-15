@@ -41,14 +41,8 @@ function start_node(host) {
     var seed_port = 9000;
     var addr = [host, seed_port].join(':');
 
-    var g;
-    if ( host ) {
-        console.log('Connecting to node', addr);
-        g = new Gossiper(node_port, [addr]);
-    }
-    else {
-        g = new Gossiper(node_port, []);
-    }
+    console.log('Connecting to node', addr);
+    var g = new Gossiper(node_port, [addr]);
 
     g.on('new_peer', function(peer_name) {
         console.log('New peer :', peer_name);
