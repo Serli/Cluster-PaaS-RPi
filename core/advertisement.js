@@ -1,5 +1,5 @@
 var mdns = require('mdns');
-var browser = mdns.createBrowser(mdns.tcp('rpi-node'), {networkInterface: 'en0'});
+var browser = mdns.createBrowser(mdns.tcp('rpi-node'), {networkInterface: 'eth0'});
 
 module.exports = {
     start : function(node_name) {

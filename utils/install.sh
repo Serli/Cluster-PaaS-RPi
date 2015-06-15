@@ -21,3 +21,4 @@ npm install nomnom
 echo '--- Msgpack ---'
 npm install msgpack
 
+mv ./browser.js ~/node_modules/mdns/lib/
