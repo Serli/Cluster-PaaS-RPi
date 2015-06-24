@@ -3,7 +3,7 @@ var advertisement = require('../core/advertisement');
 var Gossiper = require('../lib/node-gossip').Gossiper;
 
 var ip = require("ip");
-var node_addr = ip.address();
+const node_addr = ip.address();
 
 var node_launched = false;
 
@@ -55,7 +55,25 @@ function start_node(host) {
         console.log('Peer_failed :', peer_name);
     });
 
+    g.on('update', function(peer_name, key, value) {
+        console.log("peer " + peer_name + " set " + key + " to " + value);
+    });
+
     g.start();
     node_launched = true;
     console.log('Node', node_port, 'started');
+
+    setTimeout(function() {
+        g.setLocalState('my_ip', node_addr + " !!");
+    }, Math.floor(Math.random() * 10000));
+
+    setTimeout(function() {
+        g.setLocalState('my_name', opts.name);
+    }, Math.floor(Math.random() * 10000));
+
+    setTimeout(function() {
+        g.allPeers().forEach(function(peer) {
+            console.log('>>>', g.peerKeys( peer ) );
+        });
+    }, 60000);
 }
