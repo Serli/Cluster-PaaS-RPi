@@ -29,3 +29,9 @@ npm install ip
 echo '--- socket.io ---'
 npm install socket.io
 
+echo '--- jade ---'
+npm install jade
+
+echo '--- express ---'
+npm install express
+
