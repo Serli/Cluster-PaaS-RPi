@@ -31,7 +31,6 @@ html
         }
 
         socket.on('new_peer', function(peer_infos) {
-            console.log('New peer : ' + peer_infos.ip);
             appendPeerInfos(peer_infos);
         });
 

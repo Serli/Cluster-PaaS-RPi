@@ -45,12 +45,24 @@ function start_node(host) {
     var g = new Gossiper(node_port, [addr]);
 
     g.on('new_peer', function(peer_ip) {
-        var infos = {
-            port : g.peerValue(peer_ip, 'port'),
-            name : g.peerValue(peer_ip, 'name'),
-            ip : peer_ip
-        };
-        view.update_cluster_infos('new_peer', infos);
+        function sendInfos() {
+            var port = g.peerValue(peer_ip, 'port');
+            var name = g.peerValue(peer_ip, 'name');
+            var infos = {
+                port: port,
+                name: name,
+                ip: peer_ip
+            };
+            view.update_cluster_infos('new_peer', infos);
+
+            if (port === undefined || name === undefined) {
+                setTimeout(function() {
+                    sendInfos();
+                }, 2000);
+            }
+        }
+
+        sendInfos();
     });
 
     g.on('peer_alive', function(peer_ip) {
