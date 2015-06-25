@@ -21,8 +21,6 @@ var opts = require("nomnom")
 advertisement.start(opts.name);
 search_node_and_connect();
 
-view.start_http_server(node_addr);
-
 function search_node_and_connect() {
     advertisement.search_a_node(function (service) {
         if ( service.addresses.indexOf( node_addr ) < 0 && !node_launched) {
@@ -46,27 +44,34 @@ function start_node(host) {
     console.log('Connecting to node', addr);
     var g = new Gossiper(node_port, [addr]);
 
-    g.on('new_peer', function(peer_name) {
-        view.update_cluster_infos('new_peer', peer_name);
+    g.on('new_peer', function(peer_ip) {
+        var infos = {
+            port : g.peerValue(peer_ip, 'port'),
+            name : g.peerValue(peer_ip, 'name'),
+            ip : peer_ip
+        };
+        view.update_cluster_infos('new_peer', infos);
     });
 
-    g.on('peer_alive', function(peer_name) {
-        view.update_cluster_infos('peer_alive', peer_name);
+    g.on('peer_alive', function(peer_ip) {
+        view.update_cluster_infos('peer_alive', peer_ip);
     });
 
-    g.on('peer_failed', function(peer_name) {
-        view.update_cluster_infos('peer_failed', peer_name);
+    g.on('peer_failed', function(peer_ip) {
+        view.update_cluster_infos('peer_failed', peer_ip);
     });
 
-    g.on('update', function(peer_name, key, value) {
-        console.log("peer " + peer_name + " set " + key + " to " + value);
+    g.on('update', function(peer_ip, key, value) {
+        //console.log("peer " + peer_ip + " set " + key + " to " + value);
     });
 
     g.start();
+    setLocals(g, node_port);
+
     node_launched = true;
     console.log('Node', node_port, 'started');
 
-    setLocals(g, node_port);
+    view.start_http_server(node_addr, g);
 }
 
 function setLocals(g, node_port) {

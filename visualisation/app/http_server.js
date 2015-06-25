@@ -3,7 +3,7 @@ var io;
 
 const port = 8080;
 
-function start_http_server(local_ip) {
+function start_http_server(local_ip, gossip) {
 
     var app = express();
 
@@ -20,18 +20,30 @@ function start_http_server(local_ip) {
     //---------------------
 
     io = require('socket.io').listen(app.listen(port));
-    websocket_configuration();
+    websocket_configuration(gossip);
 
+    console.log('>>>', 'Http server launched on', local_ip, ':', port);
 }
 
-function websocket_configuration() {
+function websocket_configuration(gossip) {
     io.sockets.on('connection', function (socket) {
-        console.log('Client connected !');
+        console.log('[websocket] Client connected !');
+        var peers_infos = gossip.allPeers().map(function(peer_ip) {
+            return {
+                port : gossip.peerValue(peer_ip, 'port'),
+                name : gossip.peerValue(peer_ip, 'name'),
+                ip : peer_ip
+            };
+        });
+        socket.emit('all_peers_infos', peers_infos);
+        console.log("[websocket] All peers infos sent :", JSON.stringify(peers_infos));
     });
 }
 
 function update_cluster_infos(k, v) {
-    io.emit(k, v);
+    if (io !== undefined) {
+        io.sockets.emit(k, v);
+    }
 }
 
 module.exports.start_http_server = start_http_server;

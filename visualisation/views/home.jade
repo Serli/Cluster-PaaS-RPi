@@ -7,13 +7,36 @@ html
       div.jumbotron
         h1 Cluster informations
 
-    ul#nodes
+      table.table.table-striped
+        thead
+            tr
+                th IP
+                th Name
+                th Port
+        tbody#nodes
 
     script(src='/socket.io/socket.io.js')
     script(src='http://code.jquery.com/jquery-2.1.4.min.js')
     script(type='text/javascript').
         var socket = io.connect("#{ip}:8080");
-        socket.on('new_peer', function(peer_name) {
-            console.log('New peer : ' + peer_name);
-            $('#nodes').append('<li>' + peer_name + '</li>');
+
+        function appendPeerInfos(peer_infos) {
+            $('#nodes').append(
+                    '<tr>' +
+                    '<td>' + peer_infos.ip + '</th>' +
+                    '<td>' + peer_infos.name + '</th>' +
+                    '<td>' + peer_infos.port + '</td>' +
+                    '</tr>'
+            );
+        }
+
+        socket.on('new_peer', function(peer_infos) {
+            console.log('New peer : ' + peer_infos.ip);
+            appendPeerInfos(peer_infos);
+        });
+
+        socket.on('all_peers_infos', function(peers_infos) {
+            peers_infos.forEach(function(peer_infos) {
+                appendPeerInfos(peer_infos);
+            });
         });
