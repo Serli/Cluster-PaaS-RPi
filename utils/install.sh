@@ -25,3 +25,7 @@ npm install msgpack
 
 echo '--- IP ---'
 npm install ip
+
+echo '--- socket.io ---'
+npm install socket.io
+

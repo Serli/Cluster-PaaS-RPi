@@ -17,7 +17,8 @@
     <script>
         var socket = io.connect('http://localhost:8080');
         socket.on('new_peer', function(peer_name) {
-            $('#node').append('<li>' + peer_name + '</li>');
+            console.log('New peer : ' + peer_name);
+            $('#nodes').append('<li>' + peer_name + '</li>');
         });
     </script>
 
