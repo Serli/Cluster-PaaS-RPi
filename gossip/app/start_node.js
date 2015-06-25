@@ -21,7 +21,7 @@ var opts = require("nomnom")
 advertisement.start(opts.name);
 search_node_and_connect();
 
-view.start_http_server();
+view.start_http_server(node_addr);
 
 function search_node_and_connect() {
     advertisement.search_a_node(function (service) {

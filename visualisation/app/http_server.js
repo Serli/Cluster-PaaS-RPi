@@ -1,24 +1,30 @@
-var http = require('http');
-var fs = require('fs');
+var express = require('express');
 var io;
 
 const port = 8080;
 
-function start_http_server() {
+function start_http_server(local_ip) {
 
-    var server = http.createServer(function (req, res) {
-        fs.readFile('../../visualisation/views/index.html', 'utf-8', function (error, content) {
-            res.writeHead(200, {"Content-Type": "text/html"});
-            res.end(content);
+    var app = express();
+
+    app.set('views', '../../visualisation/views');
+    app.set('view engine', 'jade');
+
+    app.get('/', function(req, res) {
+        res.render('home', {
+            title: 'Welcome',
+            ip: local_ip
         });
     });
 
-    websocket_configuration(server);
-    server.listen(port);
+    //---------------------
+
+    io = require('socket.io').listen(app.listen(port));
+    websocket_configuration();
+
 }
 
-function websocket_configuration(server) {
-    io = require('socket.io').listen(server);
+function websocket_configuration() {
     io.sockets.on('connection', function (socket) {
         console.log('Client connected !');
     });
