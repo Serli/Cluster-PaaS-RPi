@@ -20,7 +20,7 @@ var opts = require("nomnom")
 advertisement.start(opts.name);
 search_node_and_connect();
 
-require('../../visualisation/app/run_http_server').start_http_server();
+require('../../visualisation').start_http_server();
 
 function search_node_and_connect() {
     advertisement.search_a_node(function (service) {
