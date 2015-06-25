@@ -20,6 +20,8 @@ var opts = require("nomnom")
 advertisement.start(opts.name);
 search_node_and_connect();
 
+require('../../visualisation/app/run_http_server').start_http_server();
+
 function search_node_and_connect() {
     advertisement.search_a_node(function (service) {
         if ( service.addresses.indexOf( node_addr ) < 0 && !node_launched) {
@@ -37,7 +39,7 @@ function search_node_and_connect() {
 }
 
 function start_node(host) {
-    var node_port = 9000;
+    const node_port = 9000;
     var addr = [host, node_port].join(':');
 
     console.log('Connecting to node', addr);
@@ -63,17 +65,11 @@ function start_node(host) {
     node_launched = true;
     console.log('Node', node_port, 'started');
 
-    setTimeout(function() {
-        g.setLocalState('my_ip', node_addr + " !!");
-    }, Math.floor(Math.random() * 10000));
+    setLocals(g, node_port);
+}
 
-    setTimeout(function() {
-        g.setLocalState('my_name', opts.name);
-    }, Math.floor(Math.random() * 10000));
-
-    setTimeout(function() {
-        g.allPeers().forEach(function(peer) {
-            console.log('>>>', g.peerKeys( peer ) );
-        });
-    }, 60000);
+function setLocals(g, node_port) {
+    g.setLocalState('name', opts.name);
+    g.setLocalState('port', node_port);
+    g.setLocalState('ip', node_addr);
 }
