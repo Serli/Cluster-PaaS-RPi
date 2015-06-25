@@ -1,6 +1,7 @@
 #!/usr/bin/env node
 var advertisement = require('../core/advertisement');
 var Gossiper = require('../lib/node-gossip').Gossiper;
+var view = require('../../visualisation');
 
 var ip = require("ip");
 const node_addr = ip.address();
@@ -20,7 +21,7 @@ var opts = require("nomnom")
 advertisement.start(opts.name);
 search_node_and_connect();
 
-require('../../visualisation').start_http_server();
+view.start_http_server();
 
 function search_node_and_connect() {
     advertisement.search_a_node(function (service) {
@@ -46,15 +47,15 @@ function start_node(host) {
     var g = new Gossiper(node_port, [addr]);
 
     g.on('new_peer', function(peer_name) {
-        console.log('New peer :', peer_name);
+        view.update_cluster_infos('new_peer', peer_name);
     });
 
     g.on('peer_alive', function(peer_name) {
-        console.log('Peer alive :', peer_name);
+        view.update_cluster_infos('peer_alive', peer_name);
     });
 
     g.on('peer_failed', function(peer_name) {
-        console.log('Peer_failed :', peer_name);
+        view.update_cluster_infos('peer_failed', peer_name);
     });
 
     g.on('update', function(peer_name, key, value) {
