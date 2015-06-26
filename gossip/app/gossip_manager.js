@@ -1,34 +1,21 @@
 var gossiper;
 
-function start(node_infos, callback) {
+function start(local_node_infos, peer_addr, callback) {
     var Gossiper = require('../lib/node-gossip').Gossiper;
-    gossiper = new Gossiper(node_infos.port, [[node_infos.ip, node_infos.port].join(':')]);
-
-    gossiper.setLocalState('infos', {
-        ip : node_infos.ip,
-        port : node_infos.port,
-        name : node_infos.name
-    });
+    gossiper = new Gossiper(peer_addr.split(':')[1], [peer_addr]);
 
     gossiper.start();
+
+    gossiper.setLocalState('infos', {
+        ip : local_node_infos.ip,
+        port : local_node_infos.port,
+        name : local_node_infos.name
+    });
 
     var view = callback();
 
     gossiper.on('new_peer', function(peer_ip) {
-        function sendInfos() {
-            var infos = gossiper.peerValue(peer_ip, 'infos');
-
-            if (port === undefined || name === undefined) {
-                setTimeout(function() {
-                    sendInfos();
-                }, 2000);
-            }
-            else {
-                view.update_cluster_infos('new_peer', infos);
-            }
-        }
-
-        sendInfos();
+        view.update_cluster_infos('new_peer', getPeerInfos(peer_ip));
     });
 
     gossiper.on('peer_alive', function(peer_ip) {
@@ -44,10 +31,26 @@ function start(node_infos, callback) {
     });
 }
 
+function getPeerInfos(peer_ip) {
+    var infos = gossiper.peerValue(peer_ip, 'infos');
+    console.log('>>> infos for', peer_ip, ':', infos);
+    console.log(typeof infos);
+
+    if (infos) {
+        return infos;
+    }
+    else {
+        console.log(infos);
+        setTimeout(function() {
+            getPeerInfos(peer_ip);
+        }, 2000);
+    }
+}
+
 function get_all_peers_infos() {
     return gossiper.allPeers().map(function(peer_ip) {
-        console.log(peer_ip);
-        return gossiper.peerValue(peer_ip, 'infos');
+        console.log('>>> peer', peer_ip);
+        return getPeerInfos(peer_ip);
     });
 }
 

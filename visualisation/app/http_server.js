@@ -26,7 +26,7 @@ function start_http_server(local_ip, gossip_manager) {
 function websocket_configuration(gossip_manager) {
     io.sockets.on('connection', function (socket) {
         console.log('[websocket] Client connected !');
-        var peers_infos = gossip_manager.get_all_peers_infos();
+        const peers_infos = gossip_manager.get_all_peers_infos();
 
         socket.emit('all_peers_infos', peers_infos);
         console.log("[websocket] All peers infos sent :", JSON.stringify(peers_infos));

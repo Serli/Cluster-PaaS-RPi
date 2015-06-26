@@ -4,7 +4,7 @@ var view = require('../../visualisation');
 var gossip_manager = require('./gossip_manager');
 
 var ip = require("ip");
-const node_addr = ip.address();
+const node_ip = ip.address();
 
 var node_launched = false;
 
@@ -16,7 +16,7 @@ search_node_and_connect();
 
 function search_node_and_connect() {
     advertisement.search_a_node(function (service) {
-        if ( service.addresses.indexOf( node_addr ) < 0 && !node_launched) {
+        if ( service.addresses.indexOf( node_ip ) < 0 && !node_launched) {
             console.log('Node found :');
             console.log('   IP :', service.addresses);
             console.log('   Host :', service.host);
@@ -30,23 +30,23 @@ function search_node_and_connect() {
     });
 }
 
-function start_node(node_ip) {
+function start_node(peer_ip) {
     const node_port = 9000;
-    var addr = [node_ip, node_port].join(':');
+    var peer_addr = [peer_ip, node_port].join(':');
 
-    console.log('Connecting to node', addr);
+    console.log('Connecting to node', peer_addr);
 
-    const node_infos = {
+    const local_node_infos = {
         ip : node_ip,
         port : node_port,
         name : node_name
     };
 
-    gossip_manager.start(node_infos, function() {
+    gossip_manager.start(local_node_infos, peer_addr, function() {
         node_launched = true;
-        console.log('Node', node_infos.ip, '(' + node_name + ')', 'started');
+        console.log('Node', local_node_infos.ip, '(' + node_name + ')', 'started');
 
-        view.start_http_server(node_addr, gossip_manager);
+        view.start_http_server(local_node_infos.ip, gossip_manager);
         return view;
     });
 }
