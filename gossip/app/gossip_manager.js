@@ -34,7 +34,7 @@ function start(local_node_infos, peer_addr, callback) {
 
 function getPeerInfos(peer_ip) {
     var infos = gossiper.peerValue(peer_ip, 'infos');
-    console.log('>>> get infos for', peer_ip, ':', infos);
+    console.log('[gossip manager] get infos for', peer_ip, ':', infos);
 
     if (infos) {
         return infos;
@@ -47,7 +47,11 @@ function getPeerInfos(peer_ip) {
 }
 
 function sendPeerInfos(peer_ip) {
-    view.update_cluster_infos('update', getPeerInfos(peer_ip));
+    var peerInfos = getPeerInfos(peer_ip);
+
+    if (peerInfos) {
+        view.update_cluster_infos('update', peerInfos);
+    }
 }
 
 function get_all_peers_infos() {

@@ -20,18 +20,19 @@ function start_http_server(local_ip, gossip_manager) {
     io = require('socket.io').listen(app.listen(port));
     websocket_configuration(gossip_manager);
 
-    console.log('>>>', 'Http server launched on', local_ip + ':' + port);
+    console.log('[http server]', 'Http server launched on', local_ip + ':' + port);
 }
 
 function websocket_configuration(gossip_manager) {
     io.sockets.on('connection', function (socket) {
-        console.log('[websocket] Client connected !');
+        console.log('[websocket server] Client connected !');
         gossip_manager.get_all_peers_infos();
     });
 }
 
 function update_cluster_infos(k, v) {
     if (io !== undefined) {
+        console.log('[websocket server] send data through websocket', JSON.stringify(v));
         io.sockets.emit(k, v);
     }
 }

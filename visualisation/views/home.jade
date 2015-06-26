@@ -21,6 +21,8 @@ html
         var socket = io.connect("#{ip}:8080");
 
         function update_peer_infos(peer_infos) {
+            console.log('new peer informations received', JSON.stringify(peer_infos));
+
             var peer_tr = $('#' + peer_infos.name);
             if ( peer_tr.length > 0 ) {
                 peer_tr.find('.ip').first().html(peer_infos.ip);
