@@ -15,4 +15,4 @@ function get_node_name() {
     }
 }
 
-module.exports.get_node_name = get_node_name;
+module.exports.getNodeName = get_node_name;

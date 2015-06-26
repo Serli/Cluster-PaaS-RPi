@@ -2,11 +2,11 @@ var mdns = require('mdns');
 var browser = mdns.createBrowser(mdns.tcp('rpi-node'), {networkInterface: require('../conf/config').interface});
 
 module.exports = {
-    start : function(node_name) {
+    start : function(nodeName) {
         var mdns = require('mdns');
 
         var infos = {
-            cluster_name: node_name
+            clusterName: nodeName
         };
 
         var ad = mdns.createAdvertisement(mdns.tcp('rpi-node'), 9999, {txtRecord: infos});
@@ -15,7 +15,7 @@ module.exports = {
         ad.start();
     },
 
-    search_a_node : function(callback) {
+    searchOneNode : function(callback) {
         console.log('Start looking for nodes');
 
         browser.on('serviceUp', callback);
@@ -23,7 +23,7 @@ module.exports = {
         browser.start();
     },
 
-    stop_searching : function() {
+    stopSearching : function() {
         browser.stop();
     }
 };

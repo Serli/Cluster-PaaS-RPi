@@ -20,30 +20,30 @@ html
     script(type='text/javascript').
         var socket = io.connect("#{ip}:8080");
 
-        function update_peer_infos(peer_infos) {
-            console.log('new peer informations received', JSON.stringify(peer_infos));
+        function updatePeerInfos(peerInfos) {
+            console.log('new peer informations received', JSON.stringify(peerInfos));
 
-            var peer_tr = $('#' + peer_infos.name);
+            var peer_tr = $('#' + peerInfos.name);
             if ( peer_tr.length > 0 ) {
-                peer_tr.find('.ip').first().html(peer_infos.ip);
-                peer_tr.find('.port').first().html(peer_infos.port);
-                peer_tr.find('.name').first().html(peer_infos.name);
+                peer_tr.find('.ip').first().html(peerInfos.ip);
+                peer_tr.find('.port').first().html(peerInfos.port);
+                peer_tr.find('.name').first().html(peerInfos.name);
             }
             else {
                 $('#nodes').append(
-                        '<tr id="' + peer_infos.name + '">' +
-                        '<td class="ip">' + peer_infos.ip + '</td>' +
-                        '<td class="port">' + peer_infos.port + '</td>' +
-                        '<td class="name">' + peer_infos.name + '</td>' +
+                        '<tr id="' + peerInfos.name + '">' +
+                        '<td class="ip">' + peerInfos.ip + '</td>' +
+                        '<td class="port">' + peerInfos.port + '</td>' +
+                        '<td class="name">' + peerInfos.name + '</td>' +
                         '</tr>'
                 );
             }
         }
 
-        socket.on('new_peer', function(peer_infos) {
-            update_peer_infos(peer_infos);
+        socket.on('new_peer', function(peerInfos) {
+            updatePeerInfos(peerInfos);
         });
 
-        socket.on('update', function(peer_infos) {
-            update_peer_infos(peer_infos);
+        socket.on('update', function(peerInfos) {
+            updatePeerInfos(peerInfos);
         });

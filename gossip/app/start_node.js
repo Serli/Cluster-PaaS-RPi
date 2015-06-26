@@ -1,52 +1,52 @@
 #!/usr/bin/env node
 var advertisement = require('../core/advertisement');
 var view = require('../../visualisation');
-var gossip_manager = require('./gossip_manager');
+var gossipManager = require('./gossip_manager');
 
 var ip = require("ip");
-const node_ip = ip.address();
+const nodeIp = ip.address();
 
-var node_launched = false;
+var nodeLaunched = false;
 
-const node_name = require('../core/name_picker').get_node_name();
-console.log('>>> node name is :', node_name);
+const nodeName = require('../core/name_picker').getNodeName();
+console.log('>>> node name is :', nodeName);
 
-advertisement.start(node_name);
-search_node_and_connect();
+advertisement.start(nodeName);
+searchNodeAndConnect();
 
-function search_node_and_connect() {
-    advertisement.search_a_node(function (service) {
-        if ( service.addresses.indexOf( node_ip ) < 0 && !node_launched) {
+function searchNodeAndConnect() {
+    advertisement.searchOneNode(function (service) {
+        if ( service.addresses.indexOf( nodeIp ) < 0 && !nodeLaunched) {
             console.log('Node found :');
             console.log('   IP :', service.addresses);
             console.log('   Host :', service.host);
             console.log('   Name :', service.txtRecord.cluster_name);
 
             console.log('Stop looking for nodes');
-            advertisement.stop_searching();
+            advertisement.stopSearching();
 
-            start_node(service.addresses[0]);
+            startNode(service.addresses[0]);
         }
     });
 }
 
-function start_node(peer_ip) {
-    const node_port = 9000;
-    var peer_addr = [peer_ip, node_port].join(':');
+function startNode(peer_ip) {
+    const nodePort = 9000;
+    var peerAddr = [peer_ip, nodePort].join(':');
 
-    console.log('Connecting to node', peer_addr);
+    console.log('Connecting to node', peerAddr);
 
-    const local_node_infos = {
-        ip : node_ip,
-        port : node_port,
-        name : node_name
+    const localNodeInfos = {
+        ip : nodeIp,
+        port : nodePort,
+        name : nodeName
     };
 
-    gossip_manager.start(local_node_infos, peer_addr, function() {
-        node_launched = true;
-        console.log('Node', local_node_infos.ip, '(' + node_name + ')', 'started');
+    gossipManager.start(localNodeInfos, peerAddr, function() {
+        nodeLaunched = true;
+        console.log('Node', localNodeInfos.ip, '(' + nodeName + ')', 'started');
 
-        view.start_http_server(local_node_infos.ip, gossip_manager);
+        view.startHttpServer(localNodeInfos.ip, gossipManager);
         return view;
     });
 }

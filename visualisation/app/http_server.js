@@ -3,7 +3,7 @@ var io;
 
 const port = 8080;
 
-function start_http_server(local_ip, gossip_manager) {
+function startHttpServer(localIp, gossipManager) {
 
     var app = express();
 
@@ -13,29 +13,29 @@ function start_http_server(local_ip, gossip_manager) {
     app.get('/', function(req, res) {
         res.render('home', {
             title: 'Welcome',
-            ip: local_ip
+            ip: localIp
         });
     });
 
     io = require('socket.io').listen(app.listen(port));
-    websocket_configuration(gossip_manager);
+    websocketConfiguration(gossipManager);
 
-    console.log('[http server]', 'Http server launched on', local_ip + ':' + port);
+    console.log('[http server]', 'Http server launched on', localIp + ':' + port);
 }
 
-function websocket_configuration(gossip_manager) {
+function websocketConfiguration(gossipManager) {
     io.sockets.on('connection', function (socket) {
         console.log('[websocket server] Client connected !');
-        gossip_manager.get_all_peers_infos();
+        gossipManager.getAllPeersInfos();
     });
 }
 
-function update_cluster_infos(k, v) {
+function updateClusterInfos(k, v) {
     if (io !== undefined) {
         console.log('[websocket server] send data through websocket', JSON.stringify(v));
         io.sockets.emit(k, v);
     }
 }
 
-module.exports.start_http_server = start_http_server;
-module.exports.update_cluster_infos = update_cluster_infos;
+module.exports.startHttpServer = startHttpServer;
+module.exports.updateClusterInfos = updateClusterInfos;
