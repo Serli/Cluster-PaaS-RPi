@@ -32,6 +32,6 @@ npm install jade
 echo '--- express ---'
 npm install express
 
-echo '--- getmac ---'
-npm install getmac
+echo '--- macaddress ---'
+npm install macaddress
 
