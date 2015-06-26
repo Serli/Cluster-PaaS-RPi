@@ -9,6 +9,7 @@ const node_addr = ip.address();
 var node_launched = false;
 
 const node_name = require('../core/name_picker').get_node_name();
+console.log('>>> node name is :', node_name);
 
 advertisement.start(node_name);
 search_node_and_connect();
