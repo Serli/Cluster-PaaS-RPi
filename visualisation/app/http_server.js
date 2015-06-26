@@ -3,7 +3,7 @@ var io;
 
 const port = 8080;
 
-function start_http_server(local_ip, gossip) {
+function start_http_server(local_ip, gossip_manager) {
 
     var app = express();
 
@@ -18,21 +18,15 @@ function start_http_server(local_ip, gossip) {
     });
 
     io = require('socket.io').listen(app.listen(port));
-    websocket_configuration(gossip);
+    websocket_configuration(gossip_manager);
 
-    console.log('>>>', 'Http server launched on', local_ip, ':', port);
+    console.log('>>>', 'Http server launched on', local_ip + ':' + port);
 }
 
-function websocket_configuration(gossip) {
+function websocket_configuration(gossip_manager) {
     io.sockets.on('connection', function (socket) {
         console.log('[websocket] Client connected !');
-        var peers_infos = gossip.allPeers().map(function(peer_ip) {
-            return {
-                port : gossip.peerValue(peer_ip, 'port'),
-                name : gossip.peerValue(peer_ip, 'name'),
-                ip : peer_ip
-            };
-        });
+        var peers_infos = gossip_manager.get_all_peers_infos();
 
         socket.emit('all_peers_infos', peers_infos);
         console.log("[websocket] All peers infos sent :", JSON.stringify(peers_infos));

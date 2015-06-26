@@ -36,11 +36,17 @@ function start_node(node_ip) {
 
     console.log('Connecting to node', addr);
 
-    gossip_manager.start(node_ip, node_port, node_name, function(g) {
-        node_launched = true;
-        console.log('Node', node_port, 'started');
+    const node_infos = {
+        ip : node_ip,
+        port : node_port,
+        name : node_name
+    };
 
-        view.start_http_server(node_addr, g);
+    gossip_manager.start(node_infos, function() {
+        node_launched = true;
+        console.log('Node', node_infos.ip, '(' + node_name + ')', 'started');
+
+        view.start_http_server(node_addr, gossip_manager);
         return view;
     });
 }
