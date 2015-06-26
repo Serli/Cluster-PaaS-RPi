@@ -17,9 +17,6 @@ npm install mdns
 
 mv ./browser.js ~/node_modules/mdns/lib/
 
-echo '--- Nomnom ---'
-npm install nomnom
-
 echo '--- Msgpack ---'
 npm install msgpack
 
