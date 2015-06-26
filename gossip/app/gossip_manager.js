@@ -16,7 +16,7 @@ function start(local_node_infos, peer_addr, callback) {
     view = callback();
 
     gossiper.on('new_peer', function(peer_ip) {
-        view.update_cluster_infos('new_peer', getPeerInfos(peer_ip));
+        sendPeerInfos('new_peer', peer_ip);
     });
 
     gossiper.on('peer_alive', function(peer_ip) {
@@ -32,7 +32,7 @@ function start(local_node_infos, peer_addr, callback) {
     });
 }
 
-function getPeerInfos(peer_ip) {
+function getPeerInfos(key, peer_ip) {
     var infos = gossiper.peerValue(peer_ip, 'infos');
     console.log('[gossip manager] get infos for', peer_ip, ':', infos);
 
@@ -41,22 +41,22 @@ function getPeerInfos(peer_ip) {
     }
     else {
         setTimeout(function() {
-            sendPeerInfos(peer_ip);
+            sendPeerInfos(key, peer_ip);
         }, 2000);
     }
 }
 
-function sendPeerInfos(peer_ip) {
-    var peerInfos = getPeerInfos(peer_ip);
+function sendPeerInfos(key, peer_ip) {
+    var peerInfos = getPeerInfos(key, peer_ip);
 
     if (peerInfos) {
-        view.update_cluster_infos('update', peerInfos);
+        view.update_cluster_infos(key, peerInfos);
     }
 }
 
 function get_all_peers_infos() {
     return gossiper.allPeers().forEach(function(peer_ip) {
-        sendPeerInfos(peer_ip);
+        sendPeerInfos('update', peer_ip);
     });
 }
 
