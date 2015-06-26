@@ -42,8 +42,6 @@ html
             update_peer_infos(peer_infos);
         });
 
-        socket.on('all_peers_infos', function(peers_infos) {
-            peers_infos.forEach(function(peer_infos) {
-                update_peer_infos(peer_infos);
-            });
+        socket.on('update', function(peer_infos) {
+            update_peer_infos(peer_infos);
         });
