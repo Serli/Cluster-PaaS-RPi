@@ -8,17 +8,9 @@ const node_addr = ip.address();
 
 var node_launched = false;
 
-var opts = require("nomnom")
-    .script("start_cluster_node")
-    .options({
-        name: {
-            position: 0,
-            required: true,
-            help: "Node's name"
-        }
-    }).parse();
+const node_name = require('../core/name_picker').get_node_name();
 
-advertisement.start(opts.name);
+advertisement.start(node_name);
 search_node_and_connect();
 
 function search_node_and_connect() {
@@ -87,7 +79,7 @@ function start_node(host) {
 }
 
 function setLocals(g, node_port) {
-    g.setLocalState('name', opts.name);
+    g.setLocalState('name', node_name);
     g.setLocalState('port', node_port);
     g.setLocalState('ip', node_addr);
 }
