@@ -17,8 +17,6 @@ function start_http_server(local_ip, gossip) {
         });
     });
 
-    //---------------------
-
     io = require('socket.io').listen(app.listen(port));
     websocket_configuration(gossip);
 
@@ -35,6 +33,7 @@ function websocket_configuration(gossip) {
                 ip : peer_ip
             };
         });
+
         socket.emit('all_peers_infos', peers_infos);
         console.log("[websocket] All peers infos sent :", JSON.stringify(peers_infos));
     });

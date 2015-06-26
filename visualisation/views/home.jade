@@ -20,22 +20,28 @@ html
     script(type='text/javascript').
         var socket = io.connect("#{ip}:8080");
 
-        function appendPeerInfos(peer_infos) {
-            $('#nodes').append(
-                    '<tr>' +
-                    '<td>' + peer_infos.ip + '</th>' +
-                    '<td>' + peer_infos.name + '</th>' +
-                    '<td>' + peer_infos.port + '</td>' +
-                    '</tr>'
-            );
+        function update_peer_infos(peer_infos) {
+            var peer_tr = $('#' + peer_infos.name);
+            if ( peer_tr ) {
+                peer_tr.find('.ip').first().html(peer_infos.ip);
+            }
+            else {
+                $('#nodes').append(
+                        '<tr id="' + peer_infos.name + '">' +
+                        '<td class="ip">' + peer_infos.ip + '</td>' +
+                        '<td class="name">' + peer_infos.name + '</td>' +
+                        '<td class="port">' + peer_infos.port + '</td>' +
+                        '</tr>'
+                );
+            }
         }
 
         socket.on('new_peer', function(peer_infos) {
-            appendPeerInfos(peer_infos);
+            update_peer_infos(peer_infos);
         });
 
         socket.on('all_peers_infos', function(peers_infos) {
             peers_infos.forEach(function(peer_infos) {
-                appendPeerInfos(peer_infos);
+                update_peer_infos(peer_infos);
             });
         });
