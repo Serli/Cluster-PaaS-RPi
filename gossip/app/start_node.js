@@ -46,12 +46,14 @@ function start_node(host) {
                 name: name,
                 ip: peer_ip
             };
-            view.update_cluster_infos('new_peer', infos);
 
             if (port === undefined || name === undefined) {
                 setTimeout(function() {
                     sendInfos();
                 }, 2000);
+            }
+            else {
+                view.update_cluster_infos('new_peer', infos);
             }
         }
 
