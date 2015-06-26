@@ -24,15 +24,15 @@ html
             var peer_tr = $('#' + peer_infos.name);
             if ( peer_tr.length > 0 ) {
                 peer_tr.find('.ip').first().html(peer_infos.ip);
-                peer_tr.find('.name').first().html(peer_infos.name);
                 peer_tr.find('.port').first().html(peer_infos.port);
+                peer_tr.find('.name').first().html(peer_infos.name);
             }
             else {
                 $('#nodes').append(
                         '<tr id="' + peer_infos.name + '">' +
                         '<td class="ip">' + peer_infos.ip + '</td>' +
-                        '<td class="name">' + peer_infos.name + '</td>' +
                         '<td class="port">' + peer_infos.port + '</td>' +
+                        '<td class="name">' + peer_infos.name + '</td>' +
                         '</tr>'
                 );
             }
