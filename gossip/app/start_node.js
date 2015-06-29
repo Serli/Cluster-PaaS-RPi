@@ -41,7 +41,8 @@ function startNode(peer_ip) {
     const localNodeInfos = {
         ip : nodeIp,
         port : nodePort,
-        name : nodeName
+        name : nodeName,
+        state : true
     };
 
     gossipManager.start(localNodeInfos, peerAddr, function() {
