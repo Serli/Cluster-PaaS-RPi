@@ -32,6 +32,7 @@ html
                 peer_tr.find('.port').first().html(peerInfos.port);
                 peer_tr.find('.name').first().html(peerInfos.name);
                 peer_tr.find('.state').first().html(stateLabel(peerInfos.state));
+                peer_tr.find('.state').first().html(peerInfos.state);
             }
             else {
                 $('#nodes').append(
@@ -39,7 +40,7 @@ html
                         '<td class="ip">' + peerInfos.ip + '</td>' +
                         '<td class="port">' + peerInfos.port + '</td>' +
                         '<td class="name">' + peerInfos.name + '</td>' +
-                        '<td class="state">' + stateLabel(true) + '</td>' +
+                        '<td class="state">' + stateLabel(peerInfos.state) + '</td>' +
                         '</tr>'
                 );
             }
