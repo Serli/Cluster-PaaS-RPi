@@ -1,7 +1,7 @@
 var gossiper;
 var view;
 
-function start(localNodeInfos, peerAddr, callback) {
+function start(localNodeInfos, peerAddr, confirmGossipStartup) {
     var Gossiper = require('../lib/node-gossip').Gossiper;
     gossiper = new Gossiper(peerAddr.split(':')[1], [peerAddr]);
 
@@ -13,7 +13,9 @@ function start(localNodeInfos, peerAddr, callback) {
         name : localNodeInfos.name
     });
 
-    callback();
+    confirmGossipStartup();
+    view.updateClusterInfos('alone', false);
+    getAllPeersInfos();
 
     gossiper.on('new_peer', function(peerIp) {
         sendPeerInfos('new_peer', peerIp);
@@ -61,7 +63,7 @@ function getAllPeersInfos() {
         });
     }
     else {
-        view.updateClusterInfos('alone', 'true');
+        view.updateClusterInfos('alone', true);
     }
 }
 
