@@ -23,7 +23,6 @@ function searchNodeAndConnect() {
             console.log('Node found :');
             console.log('   IP :', service.addresses);
             console.log('   Host :', service.host);
-            console.log('   Name :', service.txtRecord.cluster_name);
 
             console.log('Stop looking for nodes');
             advertisement.stopSearching();
