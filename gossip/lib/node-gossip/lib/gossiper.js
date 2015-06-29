@@ -150,11 +150,11 @@ Gossiper.prototype.listenToPeer = function (peer) {
     peer.on('update', function (k, v) {
         self.emit('update', peer.name, k, v);
     });
-    peer.on('peer_alive', function (phi) {
-        self.emit('peer_alive', {ip : peer.name, phi : phi});
+    peer.on('peer_alive', function (threshold, phi) {
+        self.emit('peer_alive', {ip : peer.name, threshold : threshold, phi : phi});
     });
-    peer.on('peer_failed', function (phi) {
-        self.emit('peer_failed', {ip : peer.name, phi : phi});
+    peer.on('peer_failed', function (threshold, phi) {
+        self.emit('peer_failed', {ip : peer.name, threshold : threshold, phi : phi});
     });
 };
 

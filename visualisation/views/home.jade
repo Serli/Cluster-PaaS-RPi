@@ -15,7 +15,7 @@ html
                 th IP
                 th Port
                 th Name
-                th State
+                th Suspicion level
         tbody#nodes
 
     script(src='/socket.io/socket.io.js')
@@ -31,7 +31,7 @@ html
                 state = stateLabel(true, "Self");
             }
             else {
-                state = stateLabel(peerInfos.state);
+                state = stateLabel(peerInfos.state, 'Unknown');
             }
 
             var peer_tr = $('#' + peerInfos.name);
@@ -53,18 +53,18 @@ html
             }
         }
 
-        function stateLabel(state, phi) {
+        function stateLabel(state, suspicionLevel) {
             if (state) {
-                return '<span class="label label-success">' + phi + '</span>';
+                return '<span class="label label-success">' + suspicionLevel + '%</span>';
             }
             else {
-                return '<span class="label label-danger">' + phi + '</span>';
+                return '<span class="label label-danger">' + suspicionLevel + '%</span>';
             }
         }
 
-        function changePeerState(peerName, state, phi) {
+        function changePeerState(peerName, state, suspicionLevel) {
             var peer_tr = $('#' + peerName);
-            peer_tr.find('.state').first().html(stateLabel(state, phi));
+            peer_tr.find('.state').first().html(stateLabel(state, suspicionLevel));
         }
 
         socket.on('new_peer', function(peerInfos) {
@@ -75,14 +75,21 @@ html
             updatePeerInfos(peerInfos);
         });
 
+        function computeSuspicionLevel(peerObj) {
+            const ratio = (peerObj.phi / peerObj.threshold) * 100;
+            return ratio.toFixed(0);
+        }
+
         socket.on('peer_failed', function(peerObj) {
             console.log('peer', peerObj.name, 'failed !');
-            changePeerState(peerObj.name, false, peerObj.phi);
+            var suspicionLevel = computeSuspicionLevel(peerObj);
+            changePeerState(peerObj.name, false, suspicionLevel);
         });
 
         socket.on('peer_alive', function (peerObj) {
             console.log('peer', peerObj.name, 'alive !');
-            changePeerState(peerObj.name, true, peerObj.phi);
+            var suspicionLevel = computeSuspicionLevel(peerObj);
+            changePeerState(peerObj.name, true, suspicionLevel);
         });
 
         socket.on('alone', function(isAlone) {

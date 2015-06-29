@@ -87,10 +87,10 @@ PeerState.prototype.isSuspect = function () {
 
 PeerState.prototype.markAlive = function (phi) {
     this.alive = true;
-    this.emit('peer_alive', phi);
+    this.emit('peer_alive', this.PHI, phi);
 };
 
 PeerState.prototype.markDead = function (phi) {
     this.alive = false;
-    this.emit('peer_failed', phi);
+    this.emit('peer_failed', this.PHI, phi);
 };

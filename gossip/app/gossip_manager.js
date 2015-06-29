@@ -20,11 +20,23 @@ function start(localNodeInfos, peerAddr, confirmGossipStartup) {
     });
 
     gossiper.on('peer_alive', function(peerObj) {
-        view.updateClusterInfos('peer_alive', {name : ipToName[peerObj.ip], phi : peerObj.phi});
+        view.updateClusterInfos('peer_alive',
+            {
+                name : ipToName[peerObj.ip],
+                threshold : peerObj.threshold,
+                phi : peerObj.phi
+            }
+        );
     });
 
     gossiper.on('peer_failed', function(peerObj) {
-        view.updateClusterInfos('peer_failed', {name : ipToName[peerObj.ip], phi : peerObj.phi});
+        view.updateClusterInfos('peer_failed',
+            {
+                name : ipToName[peerObj.ip],
+                threshold : peerObj.threshold,
+                phi : peerObj.phi
+            }
+        );
     });
 
     gossiper.on('update', function(peerIp, key, value) {
