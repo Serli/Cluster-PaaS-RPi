@@ -32,7 +32,7 @@ function websocketConfiguration(gossipManager) {
 
 function updateClusterInfos(k, v) {
     if (io !== undefined) {
-        console.log('[websocket server] send data through websocket', JSON.stringify(v));
+        console.log('[websocket server] send data through websocket', k, ':', JSON.stringify(v));
         io.sockets.emit(k, v);
     }
 }

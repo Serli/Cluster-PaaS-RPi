@@ -14,6 +14,9 @@ console.log('>>> node name is :', nodeName);
 advertisement.start(nodeName);
 searchNodeAndConnect();
 
+view.startHttpServer(nodeIp, gossipManager);
+gossipManager.setView(view);
+
 function searchNodeAndConnect() {
     advertisement.searchOneNode(function (service) {
         if ( service.addresses.indexOf( nodeIp ) < 0 && !nodeLaunched) {
@@ -45,8 +48,5 @@ function startNode(peer_ip) {
     gossipManager.start(localNodeInfos, peerAddr, function() {
         nodeLaunched = true;
         console.log('Node', localNodeInfos.ip, '(' + nodeName + ')', 'started');
-
-        view.startHttpServer(localNodeInfos.ip, gossipManager);
-        return view;
     });
 }

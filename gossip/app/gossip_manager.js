@@ -13,7 +13,7 @@ function start(localNodeInfos, peerAddr, callback) {
         name : localNodeInfos.name
     });
 
-    view = callback();
+    callback();
 
     gossiper.on('new_peer', function(peerIp) {
         sendPeerInfos('new_peer', peerIp);
@@ -55,10 +55,20 @@ function sendPeerInfos(key, peerIp) {
 }
 
 function getAllPeersInfos() {
-    return gossiper.allPeers().forEach(function(peerIp) {
-        sendPeerInfos('update', peerIp);
-    });
+    if (gossiper) {
+        gossiper.allPeers().forEach(function(peerIp) {
+            sendPeerInfos('update', peerIp);
+        });
+    }
+    else {
+        view.updateClusterInfos('alone', 'true');
+    }
+}
+
+function setView(v) {
+    view = v;
 }
 
 module.exports.start = start;
 module.exports.getAllPeersInfos = getAllPeersInfos;
+module.exports.setView = setView;

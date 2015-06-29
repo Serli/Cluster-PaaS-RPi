@@ -7,6 +7,8 @@ html
       div.jumbotron
         h1 Cluster informations
 
+      h2#alone.hidden.alert #{ip} is the only node connected at this moment !
+
       table.table.table-striped
         thead
             tr
@@ -46,4 +48,13 @@ html
 
         socket.on('update', function(peerInfos) {
             updatePeerInfos(peerInfos);
+        });
+
+        socket.on('alone', function(isAlone) {
+            if (isAlone) {
+                $('#alone').removeClass('hidden').addClass('show');
+            }
+            else {
+                $('#alone').removeClass('show').addClass('hidden');
+            }
         });
