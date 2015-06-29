@@ -77,24 +77,20 @@ PeerState.prototype.isSuspect = function () {
     var d = new Date();
     var phi = this.detector.phi(d.getTime());
     if (phi > this.PHI) {
-        this.markDead();
+        this.markDead(phi);
         return true;
     } else {
-        this.markAlive();
+        this.markAlive(phi);
         return false;
     }
 };
 
-PeerState.prototype.markAlive = function () {
-    if (!this.alive) {
-        this.alive = true;
-        this.emit('peer_alive');
-    }
+PeerState.prototype.markAlive = function (phi) {
+    this.alive = true;
+    this.emit('peer_alive', phi);
 };
 
-PeerState.prototype.markDead = function () {
-    if (this.alive) {
-        this.alive = false;
-        this.emit('peer_failed');
-    }
+PeerState.prototype.markDead = function (phi) {
+    this.alive = false;
+    this.emit('peer_failed', phi);
 };

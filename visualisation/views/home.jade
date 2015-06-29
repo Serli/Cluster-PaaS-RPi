@@ -26,12 +26,20 @@ html
         function updatePeerInfos(peerInfos) {
             console.log('new peer informations received', JSON.stringify(peerInfos));
 
+            var state;
+            if (peerInfos.ip == '#{ip}') {
+                state = stateLabel(true, "Self");
+            }
+            else {
+                state = stateLabel(peerInfos.state);
+            }
+
             var peer_tr = $('#' + peerInfos.name);
             if ( peer_tr.length > 0 ) {
                 peer_tr.find('.ip').first().html(peerInfos.ip);
                 peer_tr.find('.port').first().html(peerInfos.port);
                 peer_tr.find('.name').first().html(peerInfos.name);
-                peer_tr.find('.state').first().html(stateLabel(peerInfos.state));
+                peer_tr.find('.state').first().html(state);
             }
             else {
                 $('#nodes').append(
@@ -39,24 +47,24 @@ html
                         '<td class="ip">' + peerInfos.ip + '</td>' +
                         '<td class="port">' + peerInfos.port + '</td>' +
                         '<td class="name">' + peerInfos.name + '</td>' +
-                        '<td class="state">' + stateLabel(peerInfos.state) + '</td>' +
+                        '<td class="state">' + state + '</td>' +
                         '</tr>'
                 );
             }
         }
 
-        function stateLabel( state ) {
+        function stateLabel(state, phi) {
             if (state) {
-                return '<span class="label label-success">&nbsp;</span>';
+                return '<span class="label label-success">' + phi + '</span>';
             }
             else {
-                return '<span class="label label-danger">&nbsp;</span>';
+                return '<span class="label label-danger">' + phi + '</span>';
             }
         }
 
-        function changePeerState(peerName, state) {
+        function changePeerState(peerName, state, phi) {
             var peer_tr = $('#' + peerName);
-            peer_tr.find('.state').first().html(stateLabel(state));
+            peer_tr.find('.state').first().html(stateLabel(state, phi));
         }
 
         socket.on('new_peer', function(peerInfos) {
@@ -67,14 +75,14 @@ html
             updatePeerInfos(peerInfos);
         });
 
-        socket.on('peer_failed', function(peerName) {
-            console.log('peer', peerName, 'failed !');
-            changePeerState(peerName, false);
+        socket.on('peer_failed', function(peerObj) {
+            console.log('peer', peerObj.name, 'failed !');
+            changePeerState(peerObj.name, false, peerObj.phi);
         });
 
-        socket.on('peer_alive', function (peerName) {
-            console.log('peer', peerName, 'alive !');
-            changePeerState(peerName, true);
+        socket.on('peer_alive', function (peerObj) {
+            console.log('peer', peerObj.name, 'alive !');
+            changePeerState(peerObj.name, true, peerObj.phi);
         });
 
         socket.on('alone', function(isAlone) {

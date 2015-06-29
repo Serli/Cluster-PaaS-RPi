@@ -19,12 +19,12 @@ function start(localNodeInfos, peerAddr, confirmGossipStartup) {
         sendPeerInfos('new_peer', peerIp);
     });
 
-    gossiper.on('peer_alive', function(peerIp) {
-        view.updateClusterInfos('peer_alive', ipToName[peerIp]);
+    gossiper.on('peer_alive', function(peerObj) {
+        view.updateClusterInfos('peer_alive', {name : ipToName[peerObj.ip], phi : peerObj.phi});
     });
 
-    gossiper.on('peer_failed', function(peerIp) {
-        view.updateClusterInfos('peer_failed', ipToName[peerIp]);
+    gossiper.on('peer_failed', function(peerObj) {
+        view.updateClusterInfos('peer_failed', {name : ipToName[peerObj.ip], phi : peerObj.phi});
     });
 
     gossiper.on('update', function(peerIp, key, value) {
