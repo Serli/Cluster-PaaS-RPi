@@ -10,7 +10,8 @@ function start(localNodeInfos, peerAddr, confirmGossipStartup) {
     gossiper.setLocalState('infos', {
         ip : localNodeInfos.ip,
         port : localNodeInfos.port,
-        name : localNodeInfos.name
+        name : localNodeInfos.name,
+        state : true
     });
 
     confirmGossipStartup();
