@@ -15,15 +15,15 @@
 case "$1" in 
     start)
         echo "Starting node-manager"
-        forever start /home/pi/Cluster-PaaS-RPI/start_node.js
+        forever start /home/pi/Cluster-PaaS-RPi/start_node.js
         ;;
     stop)
         echo "Stopping node-manager"
-        forever stop /home/pi/Cluster-PaaS-RPI/start_node.js
+        forever stop /home/pi/Cluster-PaaS-RPi/start_node.js
         ;;
     restart)
         echo "Restarting node-manager"
-        forever restart /home/pi/Cluster-PaaS-RPI/start_node.js
+        forever restart /home/pi/Cluster-PaaS-RPi/start_node.js
         ;;
     *)
         echo "Usage: /etc/init.d/node-manager start|stop|restart"
