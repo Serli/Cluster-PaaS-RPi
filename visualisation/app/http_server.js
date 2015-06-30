@@ -7,7 +7,7 @@ function startHttpServer(localIp, gossipManager) {
 
     var app = express();
 
-    app.set('views', '../../visualisation/views');
+    app.set('views', 'visualisation/views');
     app.set('view engine', 'jade');
 
     app.get('/', function(req, res) {
