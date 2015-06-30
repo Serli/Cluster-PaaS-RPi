@@ -12,7 +12,7 @@ function startHttpServer(localIp, gossipManager) {
 
     app.get('/', function(req, res) {
         res.render('home', {
-            title: 'Welcome',
+            title: 'Cluster informations',
             ip: localIp
         });
     });
