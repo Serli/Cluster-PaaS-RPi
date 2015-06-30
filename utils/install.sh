@@ -35,3 +35,12 @@ npm install express
 echo '--- macaddress ---'
 npm install macaddress
 
+
+echo '-- Launch on start up --'
+echo '--- Launch on start up ---'
+sudo npm install forever -g
+
+echo '--- Set up deamon ---'
+sudo cp /home/pi/Cluster-PaaS-RPi/utils/node-manager /etc/init.d/
+sudo chmod +x /etc/init.d/node-manager
+sudo update-rc.d node-manager defaults

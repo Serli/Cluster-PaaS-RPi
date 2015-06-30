@@ -1,15 +1,19 @@
 #!/bin/bash
-# /etc/init.d/node-manager
+#/etc/init.d/node-manager
 
 ### BEGIN INIT INFO
 # Provides:          node-manager
-# Required-Start:    $remote_fs $syslog $network $named $time
+# Required-Start:    $remote_fs $syslog
 # Required-Stop:     $remote_fs $syslog
 # Default-Start:     2 3 4 5
 # Default-Stop:      0 1 6
 # Short-Description: Node manager for PaaS cluster
 # Description:       The node manager connects cluster's nodes together providing gossip and failure detection
 ### END INIT INFO
+
+export PATH=$PATH:/usr/local/bin
+export NODE_PATH=$NODE_PATH:/usr/local/lib/node_modules
+
 
 case "$1" in 
     start)
