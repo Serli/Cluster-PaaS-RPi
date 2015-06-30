@@ -11,11 +11,10 @@
 # Description:       The node manager connects cluster's nodes together providing gossip and failure detection
 ### END INIT INFO
 
-
 case "$1" in 
     start)
         echo "Starting node-manager"
-        forever start /home/pi/Cluster-PaaS-RPi/start_node.js
+        forever start --workingDir /home/pi/Cluster-PaaS-RPi/ -o /home/pi/node_manager_logs  /home/pi/Cluster-PaaS-RPi/start_node.js
         ;;
     stop)
         echo "Stopping node-manager"
@@ -23,7 +22,7 @@ case "$1" in
         ;;
     restart)
         echo "Restarting node-manager"
-        forever restart /home/pi/Cluster-PaaS-RPi/start_node.js
+        forever restart --workingDir /home/pi/Cluster-PaaS-RPi/ -o /home/pi/node_manager_logs  /home/pi/Cluster-PaaS-RPi/start_node.js
         ;;
     *)
         echo "Usage: /etc/init.d/node-manager start|stop|restart"
