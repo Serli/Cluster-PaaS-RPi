@@ -38,6 +38,7 @@ npm install macaddress
 
 echo '-- Launch on start up --'
 echo '--- Launch on start up ---'
+mkdir ~/.forever
 sudo npm install forever -g
 
 echo '--- Set up deamon ---'
