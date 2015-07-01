@@ -34,12 +34,12 @@ html
                 state = stateLabel(peerInfos.state, 'Unknown');
             }
 
-            var peer_tr = $('#' + peerInfos.name);
-            if ( peer_tr.length > 0 ) {
-                peer_tr.find('.ip').first().html(peerInfos.ip);
-                peer_tr.find('.port').first().html(peerInfos.port);
-                peer_tr.find('.name').first().html(peerInfos.name);
-                peer_tr.find('.state').first().html(state);
+            var $peer_tr = $('#' + peerInfos.name);
+            if ( $peer_tr.length > 0 ) {
+                $peer_tr.find('.ip').first().html(peerInfos.ip);
+                $peer_tr.find('.port').first().html(peerInfos.port);
+                $peer_tr.find('.name').first().html(peerInfos.name);
+                $peer_tr.find('.state').first().html(state);
             }
             else {
                 $('#nodes').append(
@@ -63,8 +63,8 @@ html
         }
 
         function changePeerState(peerName, state, suspicionLevel) {
-            var peer_tr = $('#' + peerName);
-            peer_tr.find('.state').first().html(stateLabel(state, suspicionLevel));
+            var $peer_tr = $('#' + peerName);
+            $peer_tr.find('.state').first().html(stateLabel(state, suspicionLevel));
         }
 
         function computeSuspicionLevel(peerObj) {
