@@ -1,3 +1,6 @@
+var logger = require('winston');
+logger.level = require('../../conf/config').logLevel;
+
 var express = require('express');
 var io;
 
@@ -20,19 +23,19 @@ function startHttpServer(localIp, gossipManager) {
     io = require('socket.io').listen(app.listen(port));
     websocketConfiguration(gossipManager);
 
-    console.log('[http server]', 'Http server launched on', localIp + ':' + port);
+    logger.info('[http server] Http server launched on %s : %s', localIp, port);
 }
 
 function websocketConfiguration(gossipManager) {
     io.sockets.on('connection', function (socket) {
-        console.log('[websocket server] Client connected !');
+        logger.info('[http server] Client connected !');
         gossipManager.getAllPeersInfos();
     });
 }
 
 function updateClusterInfos(k, v) {
     if (io !== undefined) {
-        console.log('[websocket server] send data through websocket', k, ':', JSON.stringify(v));
+        logger.debug('[http server] send data through websocket - key : %s - value :', k, v);
         io.sockets.emit(k, v);
     }
 }

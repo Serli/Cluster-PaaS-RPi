@@ -1,3 +1,6 @@
+var winston = require('winston');
+winston.level = require('../../conf/config').logLevel;
+
 var gossiper;
 var view;
 
@@ -46,7 +49,7 @@ function start(localNodeInfos, peerAddr, confirmGossipStartup) {
 
 function getPeerInfos(key, peerIp) {
     var infos = gossiper.peerValue(peerIp, 'infos');
-    console.log('[gossip manager] get infos for', peerIp, ':', infos);
+    winston.debug('[gossip manager] get infos of %s :', peerIp, infos);
 
     if (infos) {
         return infos;
