@@ -82,13 +82,11 @@ html
 
 
         socket.on('peer_failed', function(peerObj) {
-            console.log('peer', peerObj.name, 'failed !');
             var suspicionLevel = computeSuspicionLevel(peerObj) + '%';
             changePeerState(peerObj.name, false, suspicionLevel);
         });
 
         socket.on('peer_alive', function (peerObj) {
-            console.log('peer', peerObj.name, 'alive !');
             var suspicionLevel = computeSuspicionLevel(peerObj) + '%';
             changePeerState(peerObj.name, true, suspicionLevel);
         });
