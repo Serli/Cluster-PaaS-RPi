@@ -4,7 +4,7 @@ logger.level = require('../../conf/config').logLevel;
 var express = require('express');
 var io;
 
-const port = 8080;
+const PORT = 8080;
 
 function startHttpServer(localIp, gossipManager) {
 
@@ -20,10 +20,10 @@ function startHttpServer(localIp, gossipManager) {
         });
     });
 
-    io = require('socket.io').listen(app.listen(port));
+    io = require('socket.io').listen(app.listen(PORT));
     websocketConfiguration(gossipManager);
 
-    logger.info('[http server] Http server launched on %s : %s', localIp, port);
+    logger.info('[http server] Http server launched on %s : %s', localIp, PORT);
 }
 
 function websocketConfiguration(gossipManager) {

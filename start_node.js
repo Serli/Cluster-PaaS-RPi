@@ -7,22 +7,22 @@ var winston = require('winston');
 winston.level = require('./conf/config').logLevel;
 
 var ip = require("ip");
-const nodeIp = ip.address();
+const NODE_IP = ip.address();
 
 var nodeLaunched = false;
 
-const nodeName = require('./gossip/core/name_picker').getNodeName();
-winston.info('>>> node name is :', nodeName);
+const NODE_NAME = require('./gossip/core/name_picker').getNodeName();
+winston.info('>>> node name is :', NODE_NAME);
 
-advertisement.start(nodeName);
+advertisement.start(NODE_NAME);
 searchNodeAndConnect();
 
-view.startHttpServer(nodeIp, gossipManager);
+view.startHttpServer(NODE_IP, gossipManager);
 gossipManager.setView(view);
 
 function searchNodeAndConnect() {
     advertisement.searchOneNode(function (service) {
-        if ( service.addresses.indexOf( nodeIp ) < 0 && !nodeLaunched) {
+        if ( service.addresses.indexOf( NODE_IP ) < 0 && !nodeLaunched) {
             winston.info('Node found :');
             winston.info('   IP :', service.addresses);
             winston.info('   Host :', service.host);
@@ -36,19 +36,19 @@ function searchNodeAndConnect() {
 }
 
 function startNode(peer_ip) {
-    const nodePort = 9000;
-    var peerAddr = [peer_ip, nodePort].join(':');
+    const NODE_PORT = 9000;
+    var peerAddr = [peer_ip, NODE_PORT].join(':');
 
     winston.info('Connecting to node', peerAddr);
 
     const localNodeInfos = {
-        ip : nodeIp,
-        port : nodePort,
-        name : nodeName
+        ip : NODE_IP,
+        port : NODE_PORT,
+        name : NODE_NAME
     };
 
     gossipManager.start(localNodeInfos, peerAddr, function() {
         nodeLaunched = true;
-        winston.info('Node', localNodeInfos.ip, '(' + nodeName + ')', 'started');
+        winston.info('Node', localNodeInfos.ip, '(' + NODE_NAME + ')', 'started');
     });
 }
