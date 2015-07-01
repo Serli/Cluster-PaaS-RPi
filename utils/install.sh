@@ -35,6 +35,8 @@ npm install express
 echo '--- macaddress ---'
 npm install macaddress
 
+echo '--- winston ---'
+npm install winston
 
 echo '-- Launch on start up --'
 echo '--- Launch on start up ---'
