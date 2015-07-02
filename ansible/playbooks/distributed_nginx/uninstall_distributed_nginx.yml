@@ -1,0 +1,10 @@
+---
+- hosts: all
+  remote_user: pi
+  sudo: yes
+  tasks:
+    - name: Stops Nginx service
+      service: name=nginx state=stopped
+
+    - name: Uninstalls Nginx, its dependencies and configuration files
+      command: apt-get -y autoremove nginx --purge

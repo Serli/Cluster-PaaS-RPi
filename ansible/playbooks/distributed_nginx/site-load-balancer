@@ -1,0 +1,22 @@
+upstream LOAD-BALANCED-IPS {
+        #LBENTRYPOINT
+        server 192.168.86.198:80 max_fails=1 fail_timeout=1;
+        server 192.168.86.121:80 max_fails=1 fail_timeout=1;
+}
+
+server {
+	#listen   80; ## listen for ipv4; this line is default and implied
+
+	root /usr/share/nginx/www;
+	index index.html index.htm;
+
+	server_name localhost;
+
+	location / {
+		proxy_pass http://LOAD-BALANCED-IPS;
+		proxy_redirect     off;
+		proxy_set_header   Host             $host;
+		proxy_set_header   X-Real-IP        $remote_addr;
+		proxy_set_header   X-Forwarded-For  $proxy_add_x_forwarded_for;
+	}
+}
