@@ -38,6 +38,9 @@ npm install macaddress
 echo '--- winston ---'
 npm install winston
 
+echo '--- nomnom ---'
+npm install nomnom
+
 echo '-- Launch on start up --'
 echo '--- Launch on start up ---'
 mkdir ~/.forever
