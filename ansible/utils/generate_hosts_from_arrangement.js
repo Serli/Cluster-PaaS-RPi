@@ -33,23 +33,8 @@ readLines(input, function(line) {
                 hostsFileStructure[splitted[1]].hosts.push(splitted[0]);
             });
 
-            var outputFile = "";
-            hostsFileStructure.forEach(function(groupObj) {
-                outputFile += "[" + groupObj.group + "]\n";
-                groupObj.hosts.forEach(function(host) {
-                    outputFile += host + "\n";
-                });
-                outputFile += "\n";
-            });
-
-            var fs = require('fs');
-            fs.writeFile(__dirname + "/../hosts", outputFile, function(err) {
-                if(err) {
-                    return console.log(err);
-                }
-
-                console.log("\n\nThe file was saved!");
-            });
+            var outputFile = generateHostsFileContent();
+            createHostFile(outputFile);
 
             break;
         default :
@@ -60,6 +45,29 @@ readLines(input, function(line) {
 /*
     Functions
  */
+
+function createHostFile(outputFile) {
+    var fs = require('fs');
+    fs.writeFile(__dirname + "/../hosts", outputFile, function (err) {
+        if (err) {
+            return console.log(err);
+        }
+
+        console.log("\n\nThe file was saved!");
+    });
+}
+
+function generateHostsFileContent() {
+    var outputFile = "";
+    hostsFileStructure.forEach(function (groupObj) {
+        outputFile += "[" + groupObj.group + "]\n";
+        groupObj.hosts.forEach(function (host) {
+            outputFile += host + "\n";
+        });
+        outputFile += "\n";
+    });
+    return outputFile;
+}
 
 function readLines(input, func) {
     var remaining = '';
