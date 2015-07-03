@@ -43,6 +43,21 @@ then
 
     utils/generate_hosts_from_arrangement.js ../tmp/hosts_arrangement
 
+    # waits until the file is created
+    while [ ! -f ./hosts ]
+    do
+      sleep 2
+    done
+
+    while true; do
+        read -p "The hosts file has been created, do you wish to copy it to /etc/ansible ? [y/n] " yn
+        case $yn in
+            [Yy]* ) sudo cp hosts /etc/ansible; printf "\nHosts file succesfully copied"; break;;
+            [Nn]* ) exit;;
+            * ) echo "Please answer yes or no.";;
+        esac
+    done
+
     rm -rf tmp
 else
     echo 'Please make sure you are running this script in its own directory (command starting by "./")'
