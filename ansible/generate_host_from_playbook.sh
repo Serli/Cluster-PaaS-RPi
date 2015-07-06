@@ -1,5 +1,11 @@
 #!/usr/bin/env bash
 
+if [ -z "$1" ]
+  then
+    echo "No argument supplied, please give a playbook Yaml file"
+    exit;
+fi
+
 command=$0
 if [ ${command:0:2} == "./" ]
 then
