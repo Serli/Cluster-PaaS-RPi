@@ -8,7 +8,7 @@ Let's see the content of each main folder :
 - `/gossip` : 
     - **advertisement** protocol runner (based on ZeroConf/Bonjour), used by the RPi's to find each others.
     - **gossip** protocol runner used to ensure a reliable communication between RPi's.
-    - **accrual failure detector** using gossip, both based on [Node-Gossip](https://github.com/bpot/node-gossip)
+    - **accrual failure detector** using gossip, both are based on [Node-Gossip](https://github.com/bpot/node-gossip) : "based off of academic papers and Cassandra's (http://www.cassandra.org/) implementation of those papers". 
 
 - `/visualisation` : contains a http server used by each node to display a webpage on port 8080 containing the following informations about the nodes : name, IP address, port and suspicion rate (Phi factor / threshold)
 
