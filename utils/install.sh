@@ -38,8 +38,23 @@ npm install macaddress
 echo '--- winston ---'
 npm install winston
 
-echo '--- nomnom ---'
-npm install nomnom
+echo '--- cron ---'
+npm install cron
+
+echo '--- backbone ---'
+npm install backbone
+
+echo '--- underscore ---'
+npm install underscore
+
+echo '--- socket.io-client ---'
+npm install socket.io-client
+
+echo '--- backbone-callbacks ---'
+npm install backbone-callbacks
+
+echo '--- config ---'
+npm install config
 
 echo '-- Launch on start up --'
 echo '--- Launch on start up ---'

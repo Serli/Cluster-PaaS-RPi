@@ -15,17 +15,19 @@ html
                 th IP
                 th Port
                 th Name
+                th Monitoring
                 th Suspicion level
         tbody#nodes
 
     script(src='/socket.io/socket.io.js')
     script(src='http://code.jquery.com/jquery-2.1.4.min.js')
+    script(src='https://www.google.com/jsapi')
     script(type='text/javascript').
         var socket = io.connect("#{ip}:8080");
 
-        function updatePeerInfos(peerInfos) {
-            console.log('new peer informations received', JSON.stringify(peerInfos));
+        google.load("visualization", "1", {packages:["gauge"]});
 
+        function updatePeerInfos(peerInfos) {
             var state;
             if (peerInfos.ip == '#{ip}') {
                 state = stateLabel(true, "Self");
@@ -47,9 +49,11 @@ html
                         '<td class="ip">' + peerInfos.ip + '</td>' +
                         '<td class="port">' + peerInfos.port + '</td>' +
                         '<td class="name">' + peerInfos.name + '</td>' +
+                        '<td class="monitoring"><div id="chart_div_' + peerInfos.name + '" style="width: 400px; height: 120px;"></div></td>' +
                         '<td class="state">' + state + '</td>' +
                         '</tr>'
                 );
+                google.setOnLoadCallback(generateChartCallback(peerInfos.name));
             }
         }
 
@@ -72,6 +76,38 @@ html
             return ratio.toFixed(0);
         }
 
+        // monitoring
+        var peers = [];
+        function generateChartCallback(peerName) {
+            peers.push(peerName);
+            return function() {
+                var options = {
+                    width: 400, height: 120,
+                    redFrom: 90, redTo: 100,
+                    yellowFrom:75, yellowTo: 90,
+                    minorTicks: 5
+                };
+
+                var charts = [];
+                var data = [];
+                peers.forEach(function(peerName) {
+                    data[peerName] = google.visualization.arrayToDataTable([
+                        ['Label', 'Value'],
+                        ['Memory', 0]
+                    ]);
+
+                    charts[peerName] = new google.visualization.Gauge(document.getElementById('chart_div_' + peerName));
+                    charts[peerName].draw(data[peerName], options);
+
+                    socket.on('mem_' + peerName, function(mem) {
+                        data[peerName].setValue(0, 1, (((mem.totalmem - mem.freemem) / mem.totalmem) * 100).toFixed(0));
+                        charts[peerName].draw(data[peerName], options);
+                    });
+                });
+            };
+        }
+
+        // cluster infos
         socket.on('new_peer', function(peerInfos) {
             updatePeerInfos(peerInfos);
         });
@@ -79,7 +115,6 @@ html
         socket.on('update', function(peerInfos) {
             updatePeerInfos(peerInfos);
         });
-
 
         socket.on('peer_failed', function(peerObj) {
             var suspicionLevel = computeSuspicionLevel(peerObj) + '%';

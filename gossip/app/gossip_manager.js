@@ -1,9 +1,10 @@
-var winston = require('winston');
-winston.level = require('../../conf/config').logLevel;
+var logger = require('winston');
+logger.level = require('../../conf/config').logLevel;
 
 var gossiper;
 var view;
 
+var localInfos;
 var ipToName = {};
 
 function start(localNodeInfos, peerAddr, confirmGossipStartup) {
@@ -12,6 +13,7 @@ function start(localNodeInfos, peerAddr, confirmGossipStartup) {
 
     gossiper.start();
 
+    localInfos = localNodeInfos;
     gossiper.setLocalState('infos', localNodeInfos);
 
     confirmGossipStartup();
@@ -43,13 +45,16 @@ function start(localNodeInfos, peerAddr, confirmGossipStartup) {
     });
 
     gossiper.on('update', function(peerIp, key, value) {
-        //console.log("peer " + peerIp + " set " + key + " to " + value);
+        if (key === 'mem') {
+            value.name = ipToName[peerIp];
+            view.updateClusterInfos('mem_' + value.name, value);
+        }
     });
 }
 
 function getPeerInfos(key, peerIp) {
     var infos = gossiper.peerValue(peerIp, 'infos');
-    winston.debug('[gossip manager] get infos of %s :', peerIp, infos);
+    logger.debug('[gossip manager] get infos of %s :', peerIp, infos);
 
     if (infos) {
         return infos;
@@ -85,6 +90,13 @@ function setView(v) {
     view = v;
 }
 
+function updateMemInfos(memInfos) {
+    memInfos.name = localInfos.name;
+    gossiper.setLocalState('mem', memInfos);
+    view.updateClusterInfos('mem_' + memInfos.name, memInfos);
+}
+
 module.exports.start = start;
 module.exports.getAllPeersInfos = getAllPeersInfos;
 module.exports.setView = setView;
+module.exports.updateMemInfos = updateMemInfos;

@@ -2,6 +2,7 @@
 var advertisement = require('./gossip/core/advertisement');
 var view = require('./visualisation/index');
 var gossipManager = require('./gossip/app/gossip_manager');
+var nodeMonitor = require('./monitoring/node_monitor');
 
 var winston = require('winston');
 winston.level = require('./conf/config').logLevel;
@@ -48,6 +49,7 @@ function startNode(peer_ip) {
     };
 
     gossipManager.start(localNodeInfos, peerAddr, function() {
+        nodeMonitor.startMonitoring(gossipManager);
         nodeLaunched = true;
         winston.info('Node', localNodeInfos.ip, '(' + NODE_NAME + ')', 'started');
     });
