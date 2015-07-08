@@ -53,7 +53,7 @@ html
                         '<td class="state">' + state + '</td>' +
                         '</tr>'
                 );
-                google.setOnLoadCallback(generateChartCallback(peerInfos.name));
+                google.setOnLoadCallback(generateChartCallback(peerInfos.name), true);
             }
         }
 
