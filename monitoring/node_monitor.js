@@ -9,9 +9,13 @@ function startMonitoring(gossipManager) {
         os.cpuUsage(function(v){
             gossipManager.updateMonitoringInfos(
                 {
+                    countCPUs: os.cpuCount(),
                     freemem: os.freemem(),
                     totalmem: os.totalmem(),
-                    cpus: v
+                    cpus: v,
+                    loadavg1: os.loadavg(1),
+                    loadavg5: os.loadavg(5),
+                    loadavg15: os.loadavg(15)
                 }
             );
         });
