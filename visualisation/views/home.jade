@@ -93,14 +93,17 @@ html
                 peers.forEach(function(peerName) {
                     data[peerName] = google.visualization.arrayToDataTable([
                         ['Label', 'Value'],
-                        ['Memory', 0]
+                        ['Memory', 0],
+                        ['CPUs', 1]
                     ]);
 
                     charts[peerName] = new google.visualization.Gauge(document.getElementById('chart_div_' + peerName));
                     charts[peerName].draw(data[peerName], options);
 
-                    socket.on('mem_' + peerName, function(mem) {
-                        data[peerName].setValue(0, 1, (((mem.totalmem - mem.freemem) / mem.totalmem) * 100).toFixed(0));
+                    socket.on('monitoring_' + peerName, function(monitoring) {
+                        data[peerName].setValue(0, 1, (((monitoring.totalmem - monitoring.freemem) / monitoring.totalmem) * 100).toFixed(0));
+                        data[peerName].setValue(1, 1, (monitoring.cpus * 100).toFixed(0));
+
                         charts[peerName].draw(data[peerName], options);
                     });
                 });

@@ -1,20 +1,21 @@
 var logger = require('winston');
 logger.level = require('../conf/config').logLevel;
 
-require('./lib/node-monitor/monitor');
+var os  = require('os-utils');
 
 function startMonitoring(gossipManager) {
-    var processMonitor = new Monitor({probeClass:'Process'});
-    processMonitor.connect();
 
-    processMonitor.on('change', function() {
-        gossipManager.updateMemInfos(
-            {
-                freemem: processMonitor.get('freemem'),
-                totalmem: processMonitor.get('totalmem')
-            }
-        );
-    });
+    setInterval(function() {
+        os.cpuUsage(function(v){
+            gossipManager.updateMonitoringInfos(
+                {
+                    freemem: os.freemem(),
+                    totalmem: os.totalmem(),
+                    cpus: v
+                }
+            );
+        });
+    }, 5000);
 }
 
 module.exports.startMonitoring = startMonitoring;

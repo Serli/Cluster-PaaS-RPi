@@ -45,9 +45,9 @@ function start(localNodeInfos, peerAddr, confirmGossipStartup) {
     });
 
     gossiper.on('update', function(peerIp, key, value) {
-        if (key === 'mem') {
+        if (key === 'monitoring') {
             value.name = ipToName[peerIp];
-            view.updateClusterInfos('mem_' + value.name, value);
+            view.updateClusterInfos('monitoring_' + value.name, value);
         }
     });
 }
@@ -92,11 +92,11 @@ function setView(v) {
 
 function updateMemInfos(memInfos) {
     memInfos.name = localInfos.name;
-    gossiper.setLocalState('mem', memInfos);
-    view.updateClusterInfos('mem_' + memInfos.name, memInfos);
+    gossiper.setLocalState('monitoring', memInfos);
+    view.updateClusterInfos('monitoring_' + memInfos.name, memInfos);
 }
 
 module.exports.start = start;
 module.exports.getAllPeersInfos = getAllPeersInfos;
 module.exports.setView = setView;
-module.exports.updateMemInfos = updateMemInfos;
+module.exports.updateMonitoringInfos = updateMemInfos;
