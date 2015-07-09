@@ -12,6 +12,8 @@ Let's see the content of each main folder :
 
 - `/visualisation` : contains a http server used by each node to display a webpage on port 8080 containing the following informations about the nodes : name, IP address, port and suspicion rate (Phi factor / threshold)
 
+- `/monitoring` : sends monitored informations (cpu, ram, load averages) to gossip and view.
+
 - `utils` : 
     - `install.sh` : the installation shell script used to set up the first SD card. You can then copy the content on other SD cards to get your cluster.
     - files required for the installation :                                         
