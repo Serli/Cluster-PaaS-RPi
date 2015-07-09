@@ -1,0 +1,37 @@
+#!/bin/bash
+#/etc/init.d/node-manager
+
+### BEGIN INIT INFO
+# Provides:          node-manager
+# Required-Start:    $remote_fs $syslog
+# Required-Stop:     $remote_fs $syslog
+# Default-Start:     2 3 4 5
+# Default-Stop:      0 1 6
+# Short-Description: Node manager for PaaS cluster
+# Description:       The node manager connects cluster's nodes together providing gossip and failure detection
+### END INIT INFO
+
+export PATH=$PATH:/usr/local/bin
+export NODE_PATH=$NODE_PATH:/usr/local/lib/node_modules
+export HOME=/home/pi
+
+case "$1" in
+    start)
+        echo "Starting node-manager"
+        sudo forever start --workingDir /home/pi/Cluster-PaaS-RPi/ -p /home/pi/.forever /home/pi/Cluster-PaaS-RPi/start_node.js
+        ;;
+    stop)
+        echo "Stopping node-manager"
+        sudo forever stop  -p /home/pi/.forever /home/pi/Cluster-PaaS-RPi/start_node.js
+        ;;
+    restart)
+        echo "Restarting node-manager"
+        sudo forever restart --workingDir /home/pi/Cluster-PaaS-RPi/ -p /home/pi/.forever /home/pi/Cluster-PaaS-RPi/start_node.js
+        ;;
+    *)
+        echo "Usage: /etc/init.d/node-manager start|stop|restart"
+        exit 1
+        ;;
+esac
+
+exit 0
