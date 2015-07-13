@@ -17,7 +17,6 @@ jsonfile.readFile(file, function(err, obj) {
     }
     else {
         currentMetaDataObj = obj;
-        console.log('>>>', obj);
     }
 });
 
