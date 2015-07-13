@@ -21,9 +21,9 @@ const opts = require("nomnom")
         })
     .parse();
 
-sendHttpRequest(opts.ip, opts.service, opts.command);
+setMetaData(opts.ip, opts.service, opts.command);
 
-function sendHttpRequest(ip, service, action) {
+function setMetaData(ip, service, action) {
     var http = require('http');
     var config = require('../conf/config');
 
