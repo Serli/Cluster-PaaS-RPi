@@ -26,6 +26,18 @@ function setupApi(app, gossipManager) {
         res.json( { alivePeers: gossipManager.livePeers() } );
     });
 
+    app.get('/nodes/lessWorking', function(req, res) {
+        gossipManager.getAllPeersMonitoring(function(peersMonitoring) {
+            res.json(peersMonitoring);
+        })
+    });
+
+    app.get('/monitoring/all', function(req, res) {
+        require('../../monitoring/node_monitor').getMonitoringInfos(function(obj) {
+            res.json(obj);
+        })
+    });
+
     return app;
 }
 

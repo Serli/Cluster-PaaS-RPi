@@ -86,6 +86,25 @@ function getAllPeersInfos() {
     }
 }
 
+function getAllPeersMonitoring(callback) {
+    if (gossiper) {
+        var res = [];
+        const allPeers = gossiper.allPeers();
+
+        allPeers.forEach(function(peerIp) {
+            var monitorInfos = gossiper.peerValue(peerIp, 'monitoring');
+            monitorInfos.ip = peerIp.split(':')[0];
+            res.push(monitorInfos);
+            if (res.length === allPeers.length) {
+                callback({ res: res });
+            }
+        });
+    }
+    else {
+        callback({ error: 'No gossiper started. The node il probably alone in the cluster.'});
+    }
+}
+
 function setView(v) {
     view = v;
 }
@@ -110,3 +129,4 @@ module.exports.getAllPeersInfos = getAllPeersInfos;
 module.exports.setView = setView;
 module.exports.updateMonitoringInfos = updateMemInfos;
 module.exports.livePeers = livePeers;
+module.exports.getAllPeersMonitoring = getAllPeersMonitoring;
