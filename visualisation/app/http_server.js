@@ -22,7 +22,7 @@ function startHttpServer(localIp, gossipManager) {
         });
     });
 
-    app = require('./api').setupApi(app);
+    app = require('./api').setupApi(app, gossipManager);
 
     io = require('socket.io').listen(app.listen(PORT));
     websocketConfiguration(gossipManager);

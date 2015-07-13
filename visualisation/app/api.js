@@ -1,4 +1,4 @@
-function setupApi(app) {
+function setupApi(app, gossipManager) {
 
     var metaDataManager = require('../../meta-data/meta-data_manager');
 
@@ -20,6 +20,10 @@ function setupApi(app) {
             },
             callback
         );
+    });
+
+    app.get('/nodes/alive', function(req, res) {
+        res.json( { alivePeers: gossipManager.livePeers() } );
     });
 
     return app;

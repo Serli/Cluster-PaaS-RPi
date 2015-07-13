@@ -96,7 +96,17 @@ function updateMemInfos(memInfos) {
     view.updateClusterInfos('monitoring_' + memInfos.name, memInfos);
 }
 
+function livePeers() {
+    if (gossiper) {
+        return gossiper.livePeers();
+    }
+    else {
+        return [];
+    }
+}
+
 module.exports.start = start;
 module.exports.getAllPeersInfos = getAllPeersInfos;
 module.exports.setView = setView;
 module.exports.updateMonitoringInfos = updateMemInfos;
+module.exports.livePeers = livePeers;
