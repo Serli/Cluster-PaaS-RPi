@@ -22,6 +22,25 @@ function setupApi(app, gossipManager) {
         );
     });
 
+    app.put('/meta-data/remove-service/:service', function(req, res) {
+        var callback = function(err) {
+            if (err) {
+                res.json({ err: err });
+            }
+            else {
+                res.json({ service: req.params.service });
+            }
+        };
+
+        metaDataManager.updateServices(
+            {
+                service: req.params.service,
+                on: false
+            },
+            callback
+        );
+    });
+
     app.get('/nodes/alive', function(req, res) {
         res.json( { alivePeers: gossipManager.livePeers() } );
     });

@@ -60,7 +60,7 @@ function removeService(service, callback) {
         callback(errorMessage);
     }
 
-    jsonfile.writeFile(jsonfile, currentMetaDataObj, function (err) {
+    jsonfile.writeFile(file, currentMetaDataObj, function (err) {
         if (err) {
             logger.error('[meta-data-manager] ' + err);
             callback(err);
