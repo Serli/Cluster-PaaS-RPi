@@ -77,7 +77,7 @@ function sendPeerInfos(key, peerIp) {
 
 function getAllPeersInfos() {
     if (gossiper) {
-        gossiper.allPeers().forEach(function(peerIp) {
+        gossiper.livePeers().forEach(function(peerIp) {
             sendPeerInfos('update', peerIp);
         });
     }
@@ -89,7 +89,7 @@ function getAllPeersInfos() {
 function getAllPeersMonitoring(callback) {
     if (gossiper) {
         var res = [];
-        const allPeers = gossiper.allPeers();
+        const allPeers = gossiper.livePeers();
 
         allPeers.forEach(function(peerIp) {
             var monitorInfos = gossiper.peerValue(peerIp, 'monitoring');

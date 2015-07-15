@@ -26,7 +26,7 @@ require('child_process').exec('./utils/get_simple_host_file.sh',
             const ips = stdout.split('\n');
             if ( ips.length > 1 ) {
                 if ( ips.length >= opts.nbInstances ) {
-                    getLessWorkingNode(ips[0], treatResponse);
+                    getLessWorkingNodes(ips[0], treatResponse);
                 }
                 else {
                     console.log(ips.length + " found on the network. You asked for " + opts.nbInstances + " instances.");
@@ -39,13 +39,19 @@ require('child_process').exec('./utils/get_simple_host_file.sh',
     }
 );
 
-function runPlaybookOnNodes(service) {
+function runPlaybookOnNodes(sortedPeersHealtRates, service) {
     var Ansible = require('node-ansible');
     var command = new Ansible.Playbook().playbook("./playbooks/" + service + "/install_" + service);
     var promise = command.user('pi').inventory('./tmp/' + service + '_hosts').askPass().exec();
 
     promise.then(function() {
         console.log('>>>', 'Done !');
+        console.log('Updating meta-data ...');
+        updateMetaData(sortedPeersHealtRates, function(res) {
+            res.on('error', function (err) {
+                console.log('error :', err);
+            });
+        });
     }, function(err) {
         console.error(err);
     })
@@ -59,19 +65,12 @@ function generateSpecificHostsFile(nodes, service) {
     return output;
 }
 
-function createHostFile(outputFile, service) {
+function createHostFile(outputFile, service, hostFileCreationCallback) {
     var fs = require('fs');
-    fs.writeFile(__dirname + "/tmp/" + service + "_hosts", outputFile, function (err) {
-        if (err) {
-            console.log(err);
-        }
-
-        console.log("\n\nFile saved !");
-        runPlaybookOnNodes(service);
-    });
+    fs.writeFile(__dirname + "/tmp/" + service + "_hosts", outputFile, hostFileCreationCallback);
 }
 
-function findLessWorkingNode( allPeersMonitoringInfos, nbNodesToTake ) {
+function findLessWorkingNode( allPeersMonitoringInfos ) {
     const peersHealtRates = allPeersMonitoringInfos.map(function(peerMonitor) {
         const loadavg1 = peerMonitor.loadavg1 / peerMonitor.countCPUs;
         const loadavg5 = peerMonitor.loadavg5 / peerMonitor.countCPUs;
@@ -85,9 +84,7 @@ function findLessWorkingNode( allPeersMonitoringInfos, nbNodesToTake ) {
         };
     });
 
-    const sortedPeersHealtRates = peersHealtRates.sort(function(a, b) { return a.rate - b.rate; });
-
-    createHostFile( generateSpecificHostsFile(sortedPeersHealtRates.slice(0, nbNodesToTake), opts.service), opts.service );
+    return peersHealtRates.sort(function(a, b) { return a.rate - b.rate; });
 }
 
 function treatResponse(response) {
@@ -102,7 +99,19 @@ function treatResponse(response) {
     response.on('end', function () {
         const result = JSON.parse(str);
         if (result.res) {
-            findLessWorkingNode( result.res, opts.nbInstances );
+            const sortedPeersHealtRates = findLessWorkingNode( result.res, opts.nbInstances );
+            const slicedNodeList = sortedPeersHealtRates.slice(0, opts.nbInstances);
+
+            var hostFileCreationCallback = function (err) {
+                if (err) {
+                    console.log(err);
+                }
+
+                console.log("\n\nFile saved !");
+
+                runPlaybookOnNodes(slicedNodeList, opts.service);
+            };
+            createHostFile( generateSpecificHostsFile(slicedNodeList, opts.service), opts.service, hostFileCreationCallback );
         }
         else {
             console.log('Error :', result.error);
@@ -110,14 +119,24 @@ function treatResponse(response) {
     });
 }
 
-function getLessWorkingNode(ip, callback) {
+function updateMetaData(sortedPeersHealtRates, callback) {
+    sortedPeersHealtRates.forEach(function(node) {
+        sendHttpRequest(node.ip, '/meta-data/add-service/' + opts.service, 'PUT', callback);
+    });
+}
+
+function getLessWorkingNodes(ip, callback) {
+    sendHttpRequest(ip, '/nodes/lessWorking', 'GET', callback);
+}
+
+function sendHttpRequest(ip, path, method, callback) {
     var http = require('http');
 
     var options = {
         host: ip,
         port: config.httpPort,
-        path: '/nodes/lessWorking',
-        method: 'GET'
+        path: path,
+        method: method
     };
 
     var req = http.request(options, callback);
