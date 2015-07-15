@@ -109,7 +109,7 @@ function setView(v) {
     view = v;
 }
 
-function updateMemInfos(memInfos) {
+function updateMonitoringInfos(memInfos) {
     memInfos.name = localInfos.name;
     gossiper.setLocalState('monitoring', memInfos);
     view.updateClusterInfos('monitoring_' + memInfos.name, memInfos);
@@ -127,6 +127,6 @@ function livePeers() {
 module.exports.start = start;
 module.exports.getAllPeersInfos = getAllPeersInfos;
 module.exports.setView = setView;
-module.exports.updateMonitoringInfos = updateMemInfos;
+module.exports.updateMonitoringInfos = updateMonitoringInfos;
 module.exports.livePeers = livePeers;
 module.exports.getAllPeersMonitoring = getAllPeersMonitoring;
