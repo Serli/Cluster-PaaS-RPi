@@ -1,0 +1,17 @@
+- hosts: nginx_load_balancer
+  remote_user: pi
+  sudo: yes
+  tasks:
+    - name: Updates apt list
+      apt: update_cache=yes
+
+    - name: Installs Nginx
+      apt: name=nginx
+
+    - name: Sets Nginx custom configuration file
+      copy:
+        src: ./site-load-balancer
+        dest: /etc/nginx/sites-available/default
+
+    - name: Restarts Nginx service
+      service: name=nginx state=restarted

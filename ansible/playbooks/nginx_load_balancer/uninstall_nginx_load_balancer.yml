@@ -1,5 +1,5 @@
 ---
-- hosts: all
+- hosts: nginx_load_balancer
   remote_user: pi
   sudo: yes
   tasks:
