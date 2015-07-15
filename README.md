@@ -12,7 +12,9 @@ Let's see the content of each main folder :
     - **gossip** protocol runner used to ensure a reliable communication between RPi's.
     - **accrual failure detector** using gossip, both are based on [Node-Gossip](https://github.com/bpot/node-gossip) : "based off of academic papers and Cassandra's (http://www.cassandra.org/) implementation of those papers". 
 
-- `/visualisation` : contains a http server used by each node to display a webpage on port 8080 containing the following informations about the nodes : name, IP address, port and suspicion rate (Phi factor / threshold)
+- `/visualisation` : 
+    - `/app/http_server.js` contains a http server used by each node to display a webpage on port 8080 containing the following informations about the nodes : name, IP address, port and suspicion rate (Phi factor / threshold)
+    - `/app/api.js` contains all the rest API used by the CLI to communicate with the cluster or specific nodes.    
 
 - `/monitoring` : sends monitored informations (cpu, ram, load averages) to gossip and view.
 
