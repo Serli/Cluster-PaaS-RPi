@@ -36,7 +36,7 @@ function setupApi(app, gossipManager) {
         res.json( { alivePeers: gossipManager.livePeers() } );
     });
 
-    app.get('/nodes/lessWorking', function(req, res) {
+    app.get('/nodes/monitoring', function(req, res) {
         gossipManager.getAllPeersMonitoring(function(peersMonitoring) {
             res.json(peersMonitoring);
         })
