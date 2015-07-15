@@ -25,7 +25,12 @@ require('child_process').exec('./utils/get_simple_host_file.sh',
         else {
             const ips = stdout.split('\n');
             if ( ips.length > 1 ) {
-                getLessWorkingNode(ips[0], treatResponse);
+                if ( ips.length >= opts.nbInstances ) {
+                    getLessWorkingNode(ips[0], treatResponse);
+                }
+                else {
+                    console.log(ips.length + " found on the network. You asked for " + opts.nbInstances + " instances.");
+                }
             }
             else {
                 console.log("No Raspberry Pi found on through the network ...");
@@ -33,6 +38,38 @@ require('child_process').exec('./utils/get_simple_host_file.sh',
         }
     }
 );
+
+function runPlaybookOnNodes(service) {
+    var Ansible = require('node-ansible');
+    var command = new Ansible.Playbook().playbook("./playbooks/" + service + "/install_" + service);
+    var promise = command.user('pi').inventory('./tmp/' + service + '_hosts').askPass().exec();
+
+    promise.then(function() {
+        console.log('>>>', 'Done !');
+    }, function(err) {
+        console.error(err);
+    })
+}
+
+function generateSpecificHostsFile(nodes, service) {
+    var output = "[" + service + "]\n";
+    nodes.forEach(function(node) {
+        output += node.ip + "\n";
+    });
+    return output;
+}
+
+function createHostFile(outputFile, service) {
+    var fs = require('fs');
+    fs.writeFile(__dirname + "/tmp/" + service + "_hosts", outputFile, function (err) {
+        if (err) {
+            console.log(err);
+        }
+
+        console.log("\n\nFile saved !");
+        runPlaybookOnNodes(service);
+    });
+}
 
 function findLessWorkingNode( allPeersMonitoringInfos, nbNodesToTake ) {
     const peersHealtRates = allPeersMonitoringInfos.map(function(peerMonitor) {
@@ -50,7 +87,7 @@ function findLessWorkingNode( allPeersMonitoringInfos, nbNodesToTake ) {
 
     const sortedPeersHealtRates = peersHealtRates.sort(function(a, b) { return a.rate - b.rate; });
 
-    console.log(sortedPeersHealtRates.slice(0, nbNodesToTake));
+    createHostFile( generateSpecificHostsFile(sortedPeersHealtRates.slice(0, nbNodesToTake), opts.service), opts.service );
 }
 
 function treatResponse(response) {
@@ -73,10 +110,9 @@ function treatResponse(response) {
     });
 }
 
-function getLessWorkingNode(ipppp, callback) {
+function getLessWorkingNode(ip, callback) {
     var http = require('http');
 
-    const ip = '192.168.86.194';
     var options = {
         host: ip,
         port: config.httpPort,
