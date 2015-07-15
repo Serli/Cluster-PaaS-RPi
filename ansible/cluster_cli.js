@@ -3,16 +3,22 @@
 var config = require('../conf/config');
 
 const opts = require("nomnom")
-    .option('nbInstances', {
+    .option('command', {
+        choices: ['install', 'remove'],
         required: true,
         position: 0,
+        help: 'install | remove'
+    })
+    .option('nbInstances', {
+        required: true,
+        position: 1,
         help: 'Number of instance you want to launch',
         tyme: 'integer'
     })
     .option('service', {
         type: 'string',
         required: true,
-        position: 1,
+        position: 2,
         help: 'Name of the service you want to launch, relative to a folder located in "./playbooks"'
     })
     .parse();
@@ -26,7 +32,13 @@ require('child_process').exec('./utils/get_simple_host_file.sh',
             const ips = stdout.split('\n');
             if ( ips.length > 1 ) {
                 if ( ips.length >= opts.nbInstances ) {
-                    getLessWorkingNodes(ips[0], treatResponse);
+                    switch(opts.command) {
+                        case 'install':
+                            getLessWorkingNodes(ips[0], installServices);
+                            break;
+                        case 'remove':
+                            sendHttpRequest(ips[0], '/nodes/workingService/' + opts.service, 'GET', removeServices);
+                    }
                 }
                 else {
                     console.log(ips.length + " found on the network. You asked for " + opts.nbInstances + " instances.");
@@ -39,15 +51,22 @@ require('child_process').exec('./utils/get_simple_host_file.sh',
     }
 );
 
-function runPlaybookOnNodes(sortedPeersHealtRates, service) {
+function runPlaybookOnNodes(peers, service, install) {
     var Ansible = require('node-ansible');
-    var command = new Ansible.Playbook().playbook("./playbooks/" + service + "/install_" + service);
+    var command;
+    if (install) {
+        command = new Ansible.Playbook().playbook("./playbooks/" + service + "/install_" + service);
+    }
+    else {
+        command = new Ansible.Playbook().playbook("./playbooks/" + service + "/uninstall_" + service);
+    }
+
     var promise = command.user('pi').inventory('./tmp/' + service + '_hosts').askPass().exec();
 
     promise.then(function() {
         console.log('>>>', 'Done !');
         console.log('Updating meta-data ...');
-        updateMetaData(sortedPeersHealtRates, function(res) {
+        updateMetaData(peers, install, function(res) {
             res.on('error', function (err) {
                 console.log('error :', err);
             });
@@ -60,7 +79,7 @@ function runPlaybookOnNodes(sortedPeersHealtRates, service) {
 function generateSpecificHostsFile(nodes, service) {
     var output = "[" + service + "]\n";
     nodes.forEach(function(node) {
-        output += node.ip + "\n";
+        output += node + "\n";
     });
     return output;
 }
@@ -87,7 +106,38 @@ function findLessWorkingNode( allPeersMonitoringInfos ) {
     return peersHealtRates.sort(function(a, b) { return a.rate - b.rate; });
 }
 
-function treatResponse(response) {
+function removeServices(response) {
+    var str = '';
+
+    //another chunk of data has been recieved, so append it to `str`
+    response.on('data', function (chunk) {
+        str += chunk;
+    });
+
+    //the whole response has been recieved, so we just print it out here
+    response.on('end', function () {
+        const result = JSON.parse(str);
+        if (result.res) {
+            const slicedNodeList = result.res.slice(0, opts.nbInstances);
+
+            var hostFileCreationCallback = function (err) {
+                if (err) {
+                    console.log(err);
+                }
+
+                console.log("\n\nFile saved !");
+                runPlaybookOnNodes(slicedNodeList, opts.service, false);
+            };
+
+            createHostFile( generateSpecificHostsFile(slicedNodeList, opts.service), opts.service, hostFileCreationCallback );
+        }
+        else {
+            console.log('Error :', result.error);
+        }
+    });
+}
+
+function installServices(response) {
     var str = '';
 
     //another chunk of data has been recieved, so append it to `str`
@@ -101,6 +151,7 @@ function treatResponse(response) {
         if (result.res) {
             const sortedPeersHealtRates = findLessWorkingNode( result.res, opts.nbInstances );
             const slicedNodeList = sortedPeersHealtRates.slice(0, opts.nbInstances);
+            const simplifiedNodeList = slicedNodeList.map(function (node) { return node.ip; });
 
             var hostFileCreationCallback = function (err) {
                 if (err) {
@@ -109,9 +160,9 @@ function treatResponse(response) {
 
                 console.log("\n\nFile saved !");
 
-                runPlaybookOnNodes(slicedNodeList, opts.service);
+                runPlaybookOnNodes(simplifiedNodeList, opts.service, true);
             };
-            createHostFile( generateSpecificHostsFile(slicedNodeList, opts.service), opts.service, hostFileCreationCallback );
+            createHostFile( generateSpecificHostsFile(simplifiedNodeList, opts.service), opts.service, hostFileCreationCallback );
         }
         else {
             console.log('Error :', result.error);
@@ -119,9 +170,17 @@ function treatResponse(response) {
     });
 }
 
-function updateMetaData(sortedPeersHealtRates, callback) {
-    sortedPeersHealtRates.forEach(function(node) {
-        sendHttpRequest(node.ip, '/meta-data/add-service/' + opts.service, 'PUT', callback);
+function updateMetaData(peers, install, callback) {
+    var path;
+    if (install) {
+        path = '/meta-data/add-service/' + opts.service;
+    }
+    else {
+        path = '/meta-data/remove-service/' + opts.service;
+    }
+
+    peers.forEach(function(node) {
+        sendHttpRequest(node, path, 'PUT', callback);
     });
 }
 
