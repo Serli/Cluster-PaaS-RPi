@@ -56,6 +56,12 @@ npm install backbone-callbacks
 echo '--- config ---'
 npm install config
 
+echo '--- jsonfile ---'
+npm install jsonfile
+
+echo '--- node-ansible ---'
+npm install node-ansible
+
 echo '-- Launch on start up --'
 echo '--- Launch on start up ---'
 mkdir ~/.forever
@@ -65,3 +71,7 @@ echo '--- Set up deamon ---'
 sudo cp /home/pi/Cluster-PaaS-RPi/utils/node-manager /etc/init.d/
 sudo chmod +x /etc/init.d/node-manager
 sudo update-rc.d node-manager defaults
+
+echo '--- Meta-data file ---'
+touch /home/pi/meta-data.json
+echo '"{"services":[]}"' >> /home/pi/meta-data.json
