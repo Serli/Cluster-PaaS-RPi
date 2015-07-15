@@ -5,22 +5,25 @@ function setupApi(app, gossipManager) {
     function generateServiceUpdateCallback(add) {
         return function(req, res) {
 
-            var callback = function (err) {
+            var callback = function (currentMetaDataObj, err) {
                 if (err) {
                     res.json({err: err});
                 }
                 else {
+                    gossipManager.updateMetaData(currentMetaDataObj);
                     res.json({service: req.params.service});
                 }
             };
 
-            metaDataManager.updateServices(
+            const metaData = metaDataManager.updateServices(
                 {
                     service: req.params.service,
                     on: add
                 },
                 callback
             );
+
+            gossipManager.updateMetaData(metaData);
         }
     }
 
@@ -40,12 +43,8 @@ function setupApi(app, gossipManager) {
     });
 
     app.get('/nodes/workingService/:service', function(req, res) {
-
-    });
-
-    app.get('/monitoring/all', function(req, res) {
-        require('../../monitoring/node_monitor').getMonitoringInfos(function(obj) {
-            res.json(obj);
+        gossipManager.getAllNodesRunningService(req.params.service, function(peersMetaData) {
+            res.json(peersMetaData);
         })
     });
 

@@ -20,6 +20,10 @@ jsonfile.readFile(file, function(err, obj) {
     }
 });
 
+function getMetaData() {
+    return currentMetaDataObj;
+}
+
 function updateServices(metaDataInfos, callback) {
     if ( metaDataInfos.on ) {
         addService(metaDataInfos.service, callback);
@@ -36,16 +40,18 @@ function addService(service, callback) {
         jsonfile.writeFile(file, currentMetaDataObj, function (err) {
             if (err) {
                 logger.error('[meta-data-manager] ' + err);
-                callback(err);
+                const index = currentMetaDataObj.services.indexOf(service);
+                currentMetaDataObj.services.splice(index, 1);
+                callback(currentMetaDataObj, err);
             }
             else {
-                callback();
+                callback(currentMetaDataObj);
                 logger.debug('[meta-data-manager] Service "%s" added to meta-data', service);
             }
         });
     }
     else {
-        callback('[meta-data-manager] service "' + service + '" already in meta-data\'s service list');
+        callback(currentMetaDataObj, '[meta-data-manager] service "' + service + '" already in meta-data\'s service list');
     }
 }
 
@@ -57,16 +63,16 @@ function removeService(service, callback) {
     else {
         const errorMessage = '[meta-data-manager] service "' + service + '" not found';
         logger.error(errorMessage);
-        callback(errorMessage);
+        callback(currentMetaDataObj, errorMessage);
     }
 
     jsonfile.writeFile(file, currentMetaDataObj, function (err) {
         if (err) {
             logger.error('[meta-data-manager] ' + err);
-            callback(err);
+            callback(currentMetaDataObj, err);
         }
         else {
-            callback();
+            callback(currentMetaDataObj);
             logger.debug('[meta-data-manager] Service "%s" removed from meta-data', service);
 
         }
@@ -74,3 +80,4 @@ function removeService(service, callback) {
 }
 
 module.exports.updateServices = updateServices;
+module.exports.getMetaData = getMetaData;

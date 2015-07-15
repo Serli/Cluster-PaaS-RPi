@@ -16,6 +16,9 @@ function start(localNodeInfos, peerAddr, confirmGossipStartup) {
     localInfos = localNodeInfos;
     gossiper.setLocalState('infos', localNodeInfos);
 
+    const metaData = require('../../meta-data/meta-data_manager').getMetaData();
+    gossiper.setLocalState('meta-data', metaData);
+
     confirmGossipStartup();
     view.updateClusterInfos('alone', false);
     getAllPeersInfos();
@@ -86,15 +89,15 @@ function getAllPeersInfos() {
     }
 }
 
-function getAllPeersMonitoring(callback) {
+function getAllPeersValue(key, callback) {
     if (gossiper) {
         var res = [];
         const allPeers = gossiper.livePeers();
 
         allPeers.forEach(function(peerIp) {
-            var monitorInfos = gossiper.peerValue(peerIp, 'monitoring');
-            monitorInfos.ip = peerIp.split(':')[0];
-            res.push(monitorInfos);
+            var value = gossiper.peerValue(peerIp, key);
+            value.ip = peerIp.split(':')[0];
+            res.push(value);
             if (res.length === allPeers.length) {
                 callback({ res: res });
             }
@@ -105,6 +108,27 @@ function getAllPeersMonitoring(callback) {
     }
 }
 
+function getAllPeersMonitoring(callback) {
+    getAllPeersValue('monitoring', callback)
+}
+
+function getAllNodesRunningService(service, callback) {
+    getAllPeersValue('meta-data', function(resObj) {
+        if (resObj.res) {
+            var listIp = [];
+            resObj.res.forEach(function(node) {
+                if (node.services.indexOf(service) > -1) {
+                    listIp.push(node.ip);
+                }
+            });
+            callback({res: listIp});
+        }
+        else {
+            callback({error: resObj.error});
+        }
+    });
+}
+
 function setView(v) {
     view = v;
 }
@@ -113,6 +137,10 @@ function updateMonitoringInfos(memInfos) {
     memInfos.name = localInfos.name;
     gossiper.setLocalState('monitoring', memInfos);
     view.updateClusterInfos('monitoring_' + memInfos.name, memInfos);
+}
+
+function updateMetaData(metaData) {
+    gossiper.setLocalState('meta-data', metaData);
 }
 
 function livePeers() {
@@ -130,3 +158,5 @@ module.exports.setView = setView;
 module.exports.updateMonitoringInfos = updateMonitoringInfos;
 module.exports.livePeers = livePeers;
 module.exports.getAllPeersMonitoring = getAllPeersMonitoring;
+module.exports.updateMetaData = updateMetaData;
+module.exports.getAllNodesRunningService = getAllNodesRunningService;
