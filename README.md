@@ -38,3 +38,17 @@ Let's see the content of each main folder :
 
 The node manager starts running `/start_node.js`. By default the projet folder stays in `/home/pi` and is executed by the `node-manager` service **on start up**.
 The cluster needs a DHCP service available on the network.
+
+##The REST API
+
+A REST API has been set up in order to provide a CLI (`/ansible`) able to communicate with particular nodes directly. It could also be used to add data on the cluster's informations webpage.
+
+* PUT `/meta-data/add-service/:service` : Add a service to the meta-data of the node (`~/meta-data.json`). Mainly used to avoid running a playbook several times on the same node. 
+
+* PUT `/meta-data/remove-service/:service` : Remove a service to the meta-data of the node (`~/meta-data.json`). Mainly used to avoid running a playbook several times on the same node. 
+
+* GET `/nodes/alive` : Returns an array containing the IP adresses of alive nodes.  
+ 
+* GET `/nodes/monitoring` : Returns all the monitoring informations about all the nodes. 
+ 
+* GET `/nodes/workingService/:service` : Returns an array of objects containing the services installed on each node. 
