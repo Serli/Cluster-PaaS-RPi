@@ -1,5 +1,9 @@
 #!/usr/bin/env node
 
+/**
+ * Interface between the main program and the
+ */
+
 var config = require('../conf/config');
 
 var logger = require('winston');
@@ -11,6 +15,9 @@ const file = config.metaDataFile;
 
 var currentMetaDataObj = { services: [] };
 
+/**
+ * Reads the meta-data file (~/meta-data.json) and parses the content into a json object.
+ */
 jsonfile.readFile(file, function(err, obj) {
     if (err) {
         logger.error('[meta-data_manager] ' + err);

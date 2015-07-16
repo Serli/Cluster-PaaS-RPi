@@ -1,5 +1,7 @@
 #!/usr/bin/env bash
 
+# Generates an Ansible's hosts file from a given playbook by parsing the Yaml file and extract the hosts.
+
 if [ -z "$1" ]
   then
     echo "No argument supplied, please give a playbook Yaml file"

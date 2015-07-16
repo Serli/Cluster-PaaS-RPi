@@ -1,5 +1,9 @@
 #!/usr/bin/env node
 
+/**
+ * This script allows you to install and remove preconfigured services (from the playbook folder) on n nodes. These nodes will automatically be choosed to be the less busy ones if possible.
+ */
+
 var config = require('../conf/config');
 
 var ipToRequest;
@@ -25,6 +29,9 @@ const opts = require("nomnom")
     })
     .parse();
 
+/**
+ * Runs the get_simple_host_file.sh that returns a list of Raspberry Pi found on the network.
+ */
 require('child_process').exec('./utils/get_simple_host_file.sh',
     function (error, stdout, stderr) {
         if (error !== null) {
@@ -37,7 +44,7 @@ require('child_process').exec('./utils/get_simple_host_file.sh',
                     ipToRequest = ips[0];
                     switch(opts.command) {
                         case 'install':
-                            getLessWorkingNodes(ipToRequest, installServices);
+                            getAllMonitoringInformations(ipToRequest, installServices);
                             break;
                         case 'remove':
                             sendHttpRequest(ipToRequest, '/nodes/workingService/' + opts.service, 'GET', removeServices);
@@ -55,6 +62,12 @@ require('child_process').exec('./utils/get_simple_host_file.sh',
     }
 );
 
+/**
+ * Builds the Ansible's command and run it on the given nodes. It then updates the meta data on each node.
+ * @param {Array} peers
+ * @param {string} service
+ * @param {boolean} install
+ */
 function runPlaybookOnNodes(peers, service, install) {
     var Ansible = require('node-ansible');
     var command;
@@ -80,6 +93,12 @@ function runPlaybookOnNodes(peers, service, install) {
     })
 }
 
+/**
+ * Generates a string containing the informations to put in the Ansible's hosts file to be used by the playbook.
+ * @param {Array} nodes
+ * @param {string} service
+ * @returns {string} output
+ */
 function generateSpecificHostsFile(nodes, service) {
     var output = "[" + service + "]\n";
     nodes.forEach(function(node) {
@@ -88,12 +107,23 @@ function generateSpecificHostsFile(nodes, service) {
     return output;
 }
 
-function createHostFile(outputFile, service, hostFileCreationCallback) {
+/**
+ * Creates the Ansible's hosts file in ./tmp
+ * @param {string} content
+ * @param {string} service
+ * @param {function} hostFileCreationCallback
+ */
+function createHostFile(content, service, hostFileCreationCallback) {
     var fs = require('fs');
-    fs.writeFile(__dirname + "/tmp/" + service + "_hosts", outputFile, hostFileCreationCallback);
+    fs.writeFile(__dirname + "/tmp/" + service + "_hosts", content, hostFileCreationCallback);
 }
 
-function findLessWorkingNode( allPeersMonitoringInfos ) {
+/**
+ * Applies weights to the monitoring values and computes a factor used to sort nodes by busyness. The less the factor is, the less busy is the node.
+ * @param {Array} allPeersMonitoringInfos
+ * @returns {Array} lessWorkingNodes
+ */
+function findLessWorkingNodes( allPeersMonitoringInfos ) {
     return allPeersMonitoringInfos.map(function(peerMonitor) {
         const loadavg1 = peerMonitor.loadavg1 / peerMonitor.countCPUs;
         const loadavg5 = peerMonitor.loadavg5 / peerMonitor.countCPUs;
@@ -108,16 +138,20 @@ function findLessWorkingNode( allPeersMonitoringInfos ) {
     });
 }
 
-function removeServices(response) {
+/**
+ * The main function called when the remove argument is passed to the script. It finds the nodes where the service is not install yet, generates the hosts file dynamically and runs the playbook.
+ * @param {Object} httpResponse
+ */
+function removeServices(httpResponse) {
     var str = '';
 
     //another chunk of data has been recieved, so append it to `str`
-    response.on('data', function (chunk) {
+    httpResponse.on('data', function (chunk) {
         str += chunk;
     });
 
     //the whole response has been recieved, so we just print it out here
-    response.on('end', function () {
+    httpResponse.on('end', function () {
         const result = JSON.parse(str);
         if (result.res) {
             const slicedNodeList = result.res.slice(0, opts.nbInstances);
@@ -139,19 +173,24 @@ function removeServices(response) {
     });
 }
 
-function installServices(response) {
+/**
+ * The main function called when the install argument is passed to the script.
+ * It finds all the available nodes, removes the ones where the service is installed, sort them by busyness, generates the hosts file and runs the playbook.
+ * @param {Object} httpResponse
+ */
+function installServices(httpResponse) {
     var str = '';
 
     //another chunk of data has been recieved, so append it to `str`
-    response.on('data', function (chunk) {
+    httpResponse.on('data', function (chunk) {
         str += chunk;
     });
 
     //the whole response has been recieved, so we just print it out here
-    response.on('end', function () {
+    httpResponse.on('end', function () {
         const result = JSON.parse(str);
         if (result.res) {
-            const peersHealtRates = findLessWorkingNode( result.res, opts.nbInstances );
+            const peersHealtRates = findLessWorkingNodes( result.res, opts.nbInstances );
             function callback(peersNotRunningTheService) {
                 if (peersNotRunningTheService.length >= opts.nbInstances) {
                     const sortedNodeList = peersNotRunningTheService.sort(function(a, b) { return a.rate - b.rate; })
@@ -182,6 +221,11 @@ function installServices(response) {
     });
 }
 
+/**
+ * Removes the peers where the service passed in arguments to the script is installed.
+ * @param {Array} availablePeers
+ * @param {function} callback
+ */
 function removePeersRunningTheService( availablePeers, callback ) {
     sendHttpRequest(ipToRequest, '/nodes/workingService/' + opts.service, 'GET', function(response) {
         var str = "";
@@ -207,6 +251,12 @@ function removePeersRunningTheService( availablePeers, callback ) {
     })
 }
 
+/**
+ * Updates the meta-data on all the peers given in argument.
+ * @param {Array} peers
+ * @param {boolean} install
+ * @param {function} callback
+ */
 function updateMetaData(peers, install, callback) {
     var path;
     if (install) {
@@ -221,10 +271,22 @@ function updateMetaData(peers, install, callback) {
     });
 }
 
-function getLessWorkingNodes(ip, callback) {
+/**
+ * Sends a HTTP request to a node (no matter which one) to get the monitoring informations of all the available nodes.
+ * @param {string} ip
+ * @param {function} callback
+ */
+function getAllMonitoringInformations(ip, callback) {
     sendHttpRequest(ip, '/nodes/monitoring', 'GET', callback);
 }
 
+/**
+ * Sends a HTTP request to the given IP address
+ * @param {string} ip
+ * @param {string} path
+ * @param {string} method
+ * @param {function} callback
+ */
 function sendHttpRequest(ip, path, method, callback) {
     var http = require('http');
 

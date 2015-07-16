@@ -1,5 +1,9 @@
 #!/usr/bin/env node
 
+/**
+ * Parses the playbook file given in argument, extracts the hosts and returns them by the standard output. It is read by generate_host_from_playbook.sh.
+ */
+
 var yaml = require('yamljs');
 
 const opts = require("nomnom")

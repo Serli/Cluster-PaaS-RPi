@@ -1,3 +1,8 @@
+/**
+ * Choses a Star Wars's character's name and adds two digits. This function is detesminist using the MAC address of the node. There are 8700 possibilities so the probability of getting two nodes with the same name is quite low.
+ * The name is mainly used by the view (cluster information) to get unique ids in the DOM.
+ */
+
 const names = ["Boba-Fett", "IG-88", "Bossk", "Lando-Calrissian", "Lobot", "Ackbar", "Mon-Mothma", "Arvel-Crynyd", "Wicket-Systri-Warrick", "Nien-Nunb", "Anakin-Skywalker", "Wilhuff-Tarkin", "Chewbacca", "Han-Solo", "Greedo", "Jabba-Desilijic-Tiure", "Wedge-Antilles", "Jek-Tono-Porkins", "Yoda", "Palpatine", "Luke-Skywalker", "C-3PO", "R2-D2", "Darth-Vader", "Leia-Organa", "Owen-Lars", "Beru-Whitesun-Lars", "R5-D4", "Biggs-Darklighter", "Obi-Wan-Kenobi", "Qui-Gon-Jinn", "Nute-Gunray", "Finis-Valorum", "Padme-Amidala", "Jar-Jar-Binks", "Roos-Tarpals", "Rugor-Nass", "Ric-Olie", "Watto", "Sebulba", "Quarsh-Panaka", "Shmi-Skywalker", "Darth-Maul", "Bib-Fortuna", "Ayla-Secura", "Ratts-Tyerel", "Dud-Bolt", "Gasgano", "Ben-Quadinaros", "Mace-Windu", "Ki-Adi-Mundi", "Kit-Fisto", "Eeth-Koth", "Adi-Gallia", "Saesee-Tiin", "Yarael-Poof", "Plo-Koon", "Mas-Amedda", "Gregar-Typho", "Corde", "Cliegg-Lars", "Poggle-the-Lesser", "Luminara-Unduli", "Barriss-Offee", "Dorme", "Dooku", "Bail-Prestor-Organa", "Jango-Fett", "Zam-Wesell", "Dexter-Jettster", "Lama-Su", "Taun-We", "Jocasta-Nu", "R4-P17", "Wat-Tambor", "San-Hill", "Shaak-Ti", "Grievous", "Tarfful", "Raymus-Antilles", "Sly-Moore", "Tion-Medon", "Finn", "Rey", "Poe-Dameron", "BB8"]
 
 function get_node_name() {

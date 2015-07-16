@@ -21,6 +21,9 @@ searchNodeAndConnect();
 view.startHttpServer(NODE_IP, gossipManager);
 gossipManager.setView(view);
 
+/**
+ * Uses advertisement protocol to find a node and then connect to it by launching the gossip manager.
+ */
 function searchNodeAndConnect() {
     advertisement.searchOneNode(function (service) {
         if ( service.addresses.indexOf( NODE_IP ) < 0 && !nodeLaunched) {
@@ -36,6 +39,10 @@ function searchNodeAndConnect() {
     });
 }
 
+/**
+ * Starts up the gossip manager and then the node monitor.
+ * @param {string} peer_ip
+ */
 function startNode(peer_ip) {
     const NODE_PORT = 9000;
     var peerAddr = [peer_ip, NODE_PORT].join(':');

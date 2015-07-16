@@ -1,3 +1,8 @@
+/**
+ * The advertisement allows the nodes to find each others across the network.
+ * It uses the ZeroConf protocol on port 9999.
+ */
+
 var mdns = require('mdns');
 var browser = mdns.createBrowser(mdns.tcp('rpi-node'), {networkInterface: require('../../conf/config').interface});
 

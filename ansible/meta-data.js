@@ -23,6 +23,12 @@ const opts = require("nomnom")
 
 setMetaData(opts.ip, opts.service, opts.command);
 
+/**
+ * Sends a HTTP request to a node to update its meta-data using the REST API.
+ * @param {string} ip
+ * @param {string} service
+ * @param {string} action
+ */
 function setMetaData(ip, service, action) {
     var http = require('http');
     var config = require('../conf/config');
