@@ -15,7 +15,7 @@ echo '--- MDNS ---'
 sudo apt-get install libavahi-compat-libdnssd-dev
 npm install mdns
 
-mv ./browser.js ~/node_modules/mdns/lib/
+cp /home/pi/Cluster-PaaS-RPi/utils/install/browser.js /home/pi/Cluster-PaaS-RPi/node_modules/mdns/lib/
 
 echo '--- Msgpack ---'
 npm install msgpack
@@ -59,6 +59,9 @@ npm install config
 echo '--- jsonfile ---'
 npm install jsonfile
 
+echo '--- os-utils ---'
+npm install os-utils
+
 echo '--- node-ansible ---'
 npm install node-ansible
 
@@ -68,10 +71,10 @@ mkdir ~/.forever
 sudo npm install forever -g
 
 echo '--- Set up deamon ---'
-sudo cp /home/pi/Cluster-PaaS-RPi/utils/node-manager /etc/init.d/
+sudo cp /home/pi/Cluster-PaaS-RPi/utils/install/node-manager /etc/init.d/
 sudo chmod +x /etc/init.d/node-manager
 sudo update-rc.d node-manager defaults
 
 echo '--- Meta-data file ---'
 touch /home/pi/meta-data.json
-echo '"{"services":[]}"' >> /home/pi/meta-data.json
+echo '{"services":[]}' >> /home/pi/meta-data.json
