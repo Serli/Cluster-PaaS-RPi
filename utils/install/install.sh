@@ -1,7 +1,10 @@
 #!/bin/bash
+set -e # automatically exit script if an error occures
+
+cd /home/pi/Cluster-PaaS-RPi
 
 echo '-- Update & Upgrade -'
-sudo apt-get update && sudo apt-get upgrade
+sudo apt-get update && sudo apt-get upgrade -y
 
 ## Node script
 
@@ -12,7 +15,7 @@ rm node_latest_armhf.deb
 
 echo '-- NPM dependencies --'
 echo '--- MDNS ---'
-sudo apt-get install libavahi-compat-libdnssd-dev
+sudo apt-get install -y libavahi-compat-libdnssd-dev
 npm install mdns
 
 cp /home/pi/Cluster-PaaS-RPi/utils/install/browser.js /home/pi/Cluster-PaaS-RPi/node_modules/mdns/lib/
@@ -37,24 +40,6 @@ npm install macaddress
 
 echo '--- winston ---'
 npm install winston
-
-echo '--- cron ---'
-npm install cron
-
-echo '--- backbone ---'
-npm install backbone
-
-echo '--- underscore ---'
-npm install underscore
-
-echo '--- socket.io-client ---'
-npm install socket.io-client
-
-echo '--- backbone-callbacks ---'
-npm install backbone-callbacks
-
-echo '--- config ---'
-npm install config
 
 echo '--- jsonfile ---'
 npm install jsonfile
