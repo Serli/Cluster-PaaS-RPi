@@ -1,4 +1,4 @@
-# PaaS Cluster of Raspberry Pi's
+# PaaS Cluster of Raspberry Pi
 
 The idea here is to provide a minimum configuration to set up on several RPi's allowing them to **find each others over the network**, **communicate using a reliale gossip protocol** and **detect failures**. We can then deploy distributed systems without having to configure every node one by one. If you want to add a node to the cluster, just copy a configured SD card on a new one.
 Most of the code is written in Javascript and runs with NodeJs.
@@ -52,3 +52,40 @@ A REST API has been set up in order to provide a CLI (`/ansible`) able to commun
 * GET `/nodes/monitoring` : Returns all the monitoring informations about all the nodes. 
  
 * GET `/nodes/workingService/:service` : Returns an array of objects containing the services installed on each node. 
+
+##How to set up the cluster
+
+First of all, download the last RaspbianOS image [here](https://www.raspberrypi.org/downloads/). 
+
+Copy the image on your SD card (for MacOS) :
+* find the SD card : `diskutil list`
+* unmount the disk (let's say it's `/dev/disk2`) : `diskutil unmountDisk /dev/disk2`
+* copy the image : `sudo dd bs=1m if=/pathTo/2015-02-16-raspbian-wheezy.img | pv | sudo dd of=/dev/disk2`
+
+Then put the SD card in your Raspberry Pi and boot it up. Find it on the network using Nmap (be sure to use the right netmask) : `sudo nmap -sP 192.168.86.0/24 | awk '/^Nmap/{ip=$NF}/B8:27:EB/{print ip}' | tr -d '()'` 
+
+Once you are connected via SSH (by defaut the user is "pi" and the password is "raspberry"), clone this project in the `/home/pi/` of your Rapsberry Pi and set the execution rights to the installation script `./utils/install/install.sh` and run it. This will install every components the node needs to run correctly.
+
+Reboot your Raspberry Pi, wait a minute and you should be able to display a webpage on its port 8080 telling the node is alone on the cluster. If it doesn't work, try to execute the node manager yourself by executing `./start_node.js` and look at what it says.
+
+You can then put back the SD card in your computer and make a copy of the image : `sudo dd bs=1m if=/dev/disk2 | pv | sudo dd of=/pathTo/custom-raspbian-wheezy.dmg`
+
+One you have your custom image of RaspianOS, you can copy it on all SD cards you need to get a nice fully functional cluster !
+
+**complete here !**
+
+##Backlog
+
+There are still features to implement in order to get a fully working PaaS cluster of Raspberry Pi. Here is a non-exhaustive list.
+
+###Failure behavior
+
+We are able to detect when a node fails but there is no default behavior to react when it happens. We could imagine a automatic reboot. We should be able to set the threshold on the failure detector depending on the service loaded and set a particular behavior in case of failure.
+
+###Ansible template engine
+
+Ansible playbooks are great but it could be very useful to be able to dynamically personalise the playbook. Taking the exemple of the webservers and load balancer (`/ansible/playbook`), the IP addresses of the webserver are hard coded in the loadbalancer's configuration file. They should be set dynamically.
+
+###Security
+
+There are probably security issues to fix. The most obvious is the fact the Raspberry Pi use there default configuration with default user and password, allowing for anyone on the network to be connected via SSH. Using SSH keys could be a good idea if you don't need to manager the cluster from many clients. Anyway, there are probably several things to work on to get a good security level.
