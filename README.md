@@ -72,8 +72,6 @@ You can then put back the SD card in your computer and make a copy of the image 
 
 One you have your custom image of RaspianOS, you can copy it on all SD cards you need to get a nice fully functional cluster !
 
-**complete here !**
-
 ##Backlog
 
 There are still features to implement in order to get a fully working PaaS cluster of Raspberry Pi. Here is a non-exhaustive list.
