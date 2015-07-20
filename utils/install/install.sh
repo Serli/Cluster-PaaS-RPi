@@ -63,3 +63,7 @@ sudo update-rc.d node-manager defaults
 echo '--- Meta-data file ---'
 touch /home/pi/meta-data.json
 echo '{"services":[]}' >> /home/pi/meta-data.json
+
+echo '################'
+echo '#  All done !  #'
+echo '################'
